@@ -1,0 +1,14 @@
+{
+  "id":"com.decafbad.blockchalk",
+  "version":"0.0.1",
+  "title":"BlockChalk",
+  "vendor":"0xDECAFBAD",
+  "vendorurl":"http://decafbad.com/",
+  "main":"index.html",
+  "icon":"icon.png",
+  "miniicon":"miniicon.png",
+  "type":"web",
+  "theme":"dark",
+  "noWindow":false,
+  "noDeprecatedStyles":true
+}
