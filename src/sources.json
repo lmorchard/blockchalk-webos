@@ -1,5 +1,13 @@
 [
+    {"source": "javascripts\/Decafbad\/Decafbad.js"},
+    {"source": "javascripts\/Decafbad\/Utils.js"},
+    {"source": "javascripts\/Decafbad\/Chain.js"},
+    {"source": "javascripts\/BlockChalk\/BlockChalk.js"},
+    {"source": "javascripts\/BlockChalk\/Service.js"},
+    {"source": "app\/assistants\/app-assistant.js"},
+    {"source": "app\/assistants\/stage-assistant.js"},
     {
-        "source": "app\/assistants\/stage-assistant.js"
+        "source": "app\/assistants\/home-assistant.js",
+        "scenes": "home"
     }
 ]

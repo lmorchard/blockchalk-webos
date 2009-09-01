@@ -1,1 +1,45 @@
 /* Put Application specific CSS here. */
+body.palm-dark {
+    background: #000;
+}
+.palm-dark .palm-page-header.multi-line {
+    -webkit-border-image: none;
+    padding: 0px 0px 0px 0px;
+}
+.palm-dark .palm-page-header-wrapper {
+    margin: 0px 0px 0px 0px;
+}
+.palm-dark .palm-page-header .title {
+    background: #000;
+    padding: 0px 0px 0px 12px;
+    border-bottom: #fff;
+}
+.palm-dark .palm-page-header.multi-line .subtitle {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    background: #000;
+    margin: -4px 0px 4px 0px;
+    padding: 0px 0px 6px 14px;
+    border-bottom: 2px solid #fff;
+}
+.palm-dark .command-menu .palm-menu-fade {
+    opacity: 0.3;
+}
+.home-scene #chalklist {
+    margin-top: 5px;
+}
+.home-scene #chalklist .palm-row.first {
+}
+.home-scene #chalklist .palm-row {
+    min-height: 0px;
+    padding: 6px 0 10px 0;
+}
+.home-scene #chalklist .palm-row .title {
+    padding: 0 14px 0 14px;
+}
+.home-scene #chalklist .palm-row .subtitle {
+    margin: 0 14px 0 14px;
+    font-style: italic;
+    font-size: 0.75em;
+}
