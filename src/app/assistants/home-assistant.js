@@ -173,8 +173,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             Decafbad.Utils.showSimpleBanner('Finding recent chalks...');
 
             BlockChalk.service.getRecentChalks(
-                BlockChalk.gps_fix,
-                BlockChalk.user_id,
+                BlockChalk.gps_fix, BlockChalk.user_id,
                 chain.nextCallback(),
                 chain.errorCallback('getRecentChalks')
             );

@@ -62,6 +62,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/chalks', {
             method: 'get',
             parameters: {
+                'user': user_id, 
                 'long': gps_fix.longitude,
                 'lat': gps_fix.latitude
             },
