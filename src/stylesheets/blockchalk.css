@@ -29,6 +29,9 @@ body.palm-dark {
 .home-scene #chalklist {
     margin-top: 5px;
 }
+.home-scene #chalklist .empty {
+    padding: 6px 0 10px 14px;
+}
 .home-scene #chalklist .palm-row.first {
 }
 .home-scene #chalklist .palm-row {
@@ -37,9 +40,21 @@ body.palm-dark {
 }
 .home-scene #chalklist .palm-row .title {
     padding: 0 14px 0 14px;
+    font-size: 18px;
 }
 .home-scene #chalklist .palm-row .subtitle {
-    margin: 0 14px 0 14px;
+    margin: 4px 14px 0 14px;
     font-style: italic;
-    font-size: 0.75em;
+    font-size: 14px;
+}
+.compose-scene #character-count span {
+    font-weight: normal;
+    color: #4f4;
+}
+.compose-scene #character-count.over span {
+    font-weight: bold;
+    color: #f44;
+}
+.compose-scene #chalk-message textarea {
+    color: #fff;
 }

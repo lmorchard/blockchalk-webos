@@ -20,7 +20,7 @@ Decafbad.Chain = Class.create(/** @lends Decafbad.Chain */{
      */
     initialize: function(actions, object, on_error) {
         this.running  = null;
-        this.actions  = actions || [];
+        this.actions  = actions.compact() || [];
         this.object   = object;
         this.on_error = on_error || function() {};
 
@@ -65,19 +65,31 @@ Decafbad.Chain = Class.create(/** @lends Decafbad.Chain */{
         return this;
     },
 
+    /**
+     * Generate a callback for the .next() method.  
+     *
+     * Any parameters supplied to this method are passed to next() when the
+     * callback is called, followed by any parameters supplied to the callback. 
+     */
     nextCallback: function () {
         var args  = $A(arguments),
             $this = this;
         return function () {
-            $this.next.apply($this, args);
+            $this.next.apply($this, args.concat($A(arguments)));
         };
     },
 
+    /**
+     * Generate a bound callback for the on_error method.
+     *
+     * Any parameters supplied to this method are passed to on_error when the
+     * callback is called, followed by any parameters supplied to the callback. 
+     */
     errorCallback: function () {
         var args  = $A(arguments),
             $this = this;
         return function () {
-            $this.on_error.apply($this, args);
+            $this.on_error.apply($this, args.concat($A(arguments)));
         };
     }
 

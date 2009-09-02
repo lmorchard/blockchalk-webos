@@ -4,7 +4,7 @@
  * @version 0.1
  */
 /*jslint laxbreak: true */
-/*global Class, Ajax, Decafbad, BlockChalk, Mojo, $L, $H */
+/*global Class, Ajax, Decafbad, BlockChalk, Mojo, $A, $L, $H */
 BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
 
     /**
@@ -15,54 +15,180 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      */
     initialize: function (options) {
         this.options = Object.extend({
-
             base_url:   'http://blockchalk.com/api/v0.6',
             user_agent: 'blockchalk-decafbad-webos'
-
         }, options || {});
+
+        this.user_id = null;
+
         return this;
     },
 
-    getNewUserID: function (on_success, on_failure) {
-        return this.apiRequest(
-            'GET', '/user/new', {}, {},
-            function (resp) {
-                on_success(resp.responseText, resp);
-            },
-            on_failure
-        );
+    /**
+     * Set the default user ID for requests.
+     *
+     * @param {string} user_id User ID to use by default
+     */
+    setUserID: function (user_id) {
+        this.user_id = user_id;
     },
 
-    apiRequest: function (method, path, params, body_params, on_success, on_failure) {
+    /**
+     * Get a new user ID
+     *
+     * @param {function} on_success Success callback, passed user ID
+     * @param {function} on_failure Failure callback
+     */
+    getNewUserID: function (on_success, on_failure) {
+        return this.apiRequest('/user/new', {
+            method: 'get',
+            onSuccess: function (data, resp) {
+                on_success(resp.responseText, resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
 
-        var req  = new XMLHttpRequest(),
-            url  = this.options.base_url + path,
-            body = null;
+    /**
+     * Look up recent chalks near a given location
+     *
+     * @param {object}   gps_fix           GPS location fix
+     * @param {string}   gps_fix.longitude Location longitude
+     * @param {string}   gps_fix.latitude  Location latitude
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    getRecentChalks: function (gps_fix, user_id, on_success, on_failure) {
+        return this.apiRequest('/chalks', {
+            method: 'get',
+            parameters: {
+                'long': gps_fix.longitude,
+                'lat': gps_fix.latitude
+            },
+            onSuccess: function (data, resp) {
+                on_success(data.map(this._fixupChalk, this), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
 
-        if (params) {
-            url += '?' + $H(params).toQueryString();
-        }
-        if (body_params) {
-            body = $H(params).toQueryString();
-        }
+    /**
+     * Get a single chalk by ID.
+     *
+     * @param {string}   chalk_id    ID of chalk to fetch
+     * @param {function} on_success  success callback, passed user id
+     * @param {function} on_failure  failure callback
+     */
+    getChalk: function (chalk_id, on_success, on_failure) {
+        return this.apiRequest('/chalk/'+chalk_id, {
+            method: 'get',
+            onSuccess: function (data, resp) {
+                on_success(this._fixupChalk(data), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
 
-        req.open(method, url);
+    /**
+     * Bury a single chalk by ID.
+     *
+     * @param {string}   chalk_id    ID of chalk to fetch
+     * @param {string}   user_id     User ID for chalk
+     * @param {function} on_success  success callback, passed user id
+     * @param {function} on_failure  failure callback
+     */
+    buryChalk: function (chalk_id, user_id, on_success, on_failure) {
+        Mojo.log("BURY CHALK! %s", chalk_id);
+        return this.apiRequest('/chalk/'+chalk_id+'/bury', {
+            method: 'post',
+            parameters: {
+                'user': user_id
+            },
+            onSuccess: on_success,
+            onFailure: on_failure
+        });
+    },
 
-        // WebKit disallows User-Agent
-        // req.setRequestHeader('User-Agent', this.options.user_agent);
+    /**
+     * Create a new chalk.
+     *
+     * @param {string}   msg               Chalk message contents
+     * @param {object}   gps_fix           GPS location fix
+     * @param {string}   gps_fix.longitude Location longitude
+     * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   user_id           User ID for chalk
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    createNewChalk: function (msg, gps_fix, user_id, on_success, on_failure) {
+        return this.apiRequest('/chalk/', {
+            method: 'post',
+            parameters: {
+                'msg':  msg,
+                'long': gps_fix.longitude,
+                'lat':  gps_fix.latitude,
+                'user': user_id
+            },
+            onSuccess: function (data, resp) {
+                on_success(this._fixupChalk(data), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
 
-        req.onreadystatechange = function() {
-            if (4 == req.readyState) {
-                if (200 == req.status) {
-                    on_success(req);
-                } else {
-                    on_failure(req);
-                }
-            }
+    /**
+     * Perform some post-response fixing on chalk records.
+     */
+    _fixupChalk: function (chalk) {
+        var dt = chalk.datetime,
+            parts = dt.split(' '),
+            date_parts = parts[0].split('-'),
+            time_parts = parts[1].split(':'),
+            date = new Date();
+
+        date.setUTCFullYear(date_parts[0]);
+        date.setUTCMonth(date_parts[1] - 1);
+        date.setUTCDate(date_parts[2]);
+        date.setUTCHours(time_parts[0]);
+        date.setUTCMinutes(time_parts[1]);
+        date.setUTCSeconds(time_parts[2]);
+
+        chalk.datetime = date;
+
+        return chalk;
+    },
+
+    /*
+
+    User-specific operations:
+
+    * GET /user/userId/chalks - Get recent chalks written by a given user
+    * GET /user/userId/replies - Get recent replies written to a given user
+    * POST /reply - Send a reply
+     
+     */
+
+    /**
+     * Common API request call utility.
+     *
+     * @param {string}   path        Path to API resource
+     * @param {object}   options     Ajax.Request options
+     * @param {function} on_success  success callback, passed user id
+     * @param {function} on_failure  failure callback
+     */
+    apiRequest: function (path, options) {
+        var url = this.options.base_url + path;
+        
+        options.evalJSON = 'force';
+        options.parameters = options.parameters || {};
+        options.parameters.format = 'json';
+
+        var orig_on_success = options.onSuccess;
+        options.onSuccess = function (resp) {
+            orig_on_success(resp.responseJSON || null, resp);
         };
 
-        req.send(body);
-        return this;
+        return new Ajax.Request(url, options);
     },
 
     EOF:null

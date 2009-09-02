@@ -9,5 +9,17 @@
     {
         "source": "app\/assistants\/home-assistant.js",
         "scenes": "home"
+    },
+    {
+        "source": "app\/assistants\/chalk-assistant.js",
+        "scenes": "chalk"
+    },
+    {
+        "source": "app\/assistants\/compose-assistant.js",
+        "scenes": "compose"
+    },
+    {
+        "source": "app\/assistants\/reply-assistant.js",
+        "scenes": "reply"
     }
 ]
