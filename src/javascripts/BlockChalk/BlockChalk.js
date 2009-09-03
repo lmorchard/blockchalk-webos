@@ -37,6 +37,43 @@ var BlockChalk = (function () {
         },
 
         /**
+         * Weekdays for _formatDate
+         */
+        weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+
+        /**
+         * Months for _formatDate
+         */
+        months: ['Jan','Feb','Mar','Apr','May','Jun',
+                    'Jul', 'Aug','Sep','Oct','Nov','Dec'],
+
+        /**
+         * Convert a date to a human-friendly string.
+         * 11:34pm on Tue, Sep 01
+         */
+        formatDate: function(dt, model) {
+            if (typeof dt === 'undefined') { return ''; }
+
+            // I should probably use a date formatting library.
+            var out = [
+                dt.getHours() % 12, 
+                ':', 
+                ('00' + (''+dt.getMinutes())).substr(-2),
+                ( dt.getHours() < 12 ) ? 'am' : 'pm'
+            ];
+
+            if ( (new Date()).toDateString() !== dt.toDateString() ) {
+                out = out.concat([
+                    ' on ', BlockChalk.weekdays[dt.getDay()], ', ',
+                    BlockChalk.months[dt.getMonth()], ' ',
+                    dt.getDate()
+                ]);
+            }
+
+            return out.join('');
+        },
+
+        /**
          * Global app-wide initialization.
          */
         onLaunch: function (launch_params) {

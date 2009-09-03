@@ -36,6 +36,18 @@ p.helptext {
 .palm-dark .textfield-group textarea {
     color: #fff;
 }
+.palm-list .single .chalk {
+    padding: 18px 0 18px 0;
+}
+.palm-list .single .chalk #contents {
+    font-size: 18px;
+    padding: 0px 14px 0px 14px;
+}
+.palm-list .single .chalk #meta {
+    margin: 4px 14px 0 14px;
+    font-style: italic;
+    font-size: 14px;
+}
 .home-scene #chalklist {
     margin-top: 5px;
 }

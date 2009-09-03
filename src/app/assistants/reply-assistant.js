@@ -1,32 +1,144 @@
-function ReplyAssistant() {
-	/* this is the creator function for your scene assistant object. It will be passed all the 
-	   additional parameters (after the scene name) that were passed to pushScene. The reference
-	   to the scene controller (this.controller) has not be established yet, so any initialization
-	   that needs the scene controller should be done in the setup function below. */
+/**
+ * @fileOverview Chalk reply scene assistant
+ * @author <a href="http://decafbad.com">l.m.orchard@pobox.com</a>
+ * @version 0.1
+ */
+/*jslint laxbreak: true */
+/*global Decafbad, BlockChalk, Mojo, $, $L, $A, $H, SimpleDateFormat */
+function ReplyAssistant(chalk) {
+    this.chalk = chalk;
 }
 
-ReplyAssistant.prototype.setup = function() {
-	/* this function is for setup tasks that have to happen when the scene is first created */
-		
-	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
-	
-	/* setup widgets here */
-	
-	/* add event handlers to listen to events from widgets */
-}
+ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
 
-ReplyAssistant.prototype.activate = function(event) {
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
-}
+    var MAX_MESSAGE_LENGTH = 256;
 
+    return {
 
-ReplyAssistant.prototype.deactivate = function(event) {
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
-}
+        /**
+         * Set up the whole card.
+         */
+        setup: function () {
 
-ReplyAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-}
+            BlockChalk.setupGlobalMenu(this.controller);
+
+            this.model = {
+                message: ''
+            };
+
+            this.controller.get('contents').update(
+                this.chalk.contents.escapeHTML()
+            );
+
+            this.controller.get('meta').update([
+                BlockChalk.formatDate(this.chalk.datetime),
+                ", ",
+                this.chalk.distance
+            ].join('').escapeHTML());
+
+            this.controller.setupWidget(
+                'chalk-message',
+                {
+                    'modelProperty': 'message',
+                    'hintText': $L('Insert your genius reply here.'),
+                    'multiline':true,
+                    'enterSubmits':true,
+                    'autoFocus':true,
+                    'changeOnKeyPress': true,
+                    'autoReplace': true
+                },
+                this.model
+            );
+
+            this.controller.setupWidget(
+                'chalk-post', { label: $L('post') }, {}
+            );
+
+            this.updateRemainingChars();
+
+        },
+
+        /**
+         * Hook up listeners on card activation.
+         */
+        activate: function (event) {
+            Decafbad.Utils.setupListeners([
+                ['chalk-message', Mojo.Event.propertyChange, this.handleChange],
+                ['chalk-post', Mojo.Event.tap, this.handleSubmit]
+            ], this);
+        },
+
+        /**
+         * Unhook listeners on card deactivation.
+         */
+        deactivate: function (event) {
+            Decafbad.Utils.clearListeners(this);
+        },
+
+        /**
+         * Clean everything up.
+         */
+        cleanup: function (event) {
+        },
+
+        /**
+         * Update the remaining character counter, returning the count.
+         */
+        updateRemainingChars: function () {
+            var remaining = MAX_MESSAGE_LENGTH - this.model.message.length;
+            var counter = this.controller.get('character-count');
+            
+            if (remaining < 0) {
+                counter.addClassName('over');
+            } else {
+                counter.removeClassName('over');
+            }
+
+            counter.update('<span>'+remaining+'</span> chars, stay calm');
+            return remaining;
+        },
+
+        /**
+         * Handle changes to the message field, mainly to update counter.
+         */
+        handleChange: function (ev) {
+            var remaining = this.updateRemainingChars();
+        },
+
+        /**
+         * Handle a tap on the submit button to post the chalk.
+         */
+        handleSubmit: function (ev) {
+            var remaining = this.updateRemainingChars();
+            if (remaining < 0) { return; }
+
+            BlockChalk.service.createNewReply(
+
+                this.chalk.id, this.model.message, 
+                BlockChalk.gps_fix, BlockChalk.user_id,
+
+                function (new_chalk) {
+                    Decafbad.Utils.showSimpleBanner($L('Reply sent'));
+                    this.controller.stageController.popScene({ refresh: true });
+                }.bind(this),
+
+                function (resp) {
+                    this.controller.showAlertDialog({
+                        onChoose: function(value) {},
+                        title: $L("BlockChalk"),
+                        message: "FAILED " + $A(arguments).toJSON(),
+                        choices: [
+                            {label:$L("OK"), value:""}
+                        ]
+                    });
+                }.bind(this)
+
+            );
+
+        },
+
+        EOF: null
+    };
+
+}());
+

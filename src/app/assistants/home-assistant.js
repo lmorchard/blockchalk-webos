@@ -1,5 +1,5 @@
 /**
- * @fileOverview Home stage assistant
+ * @fileOverview Home scene assistant
  * @author <a href="http://decafbad.com">l.m.orchard@pobox.com</a>
  * @version 0.1
  */
@@ -32,7 +32,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     listTemplate:  'home/chalklist-container',
                     emptyTemplate: 'home/chalklist-empty',
                     formatters: {
-                        datetime: this._formatDate.bind(this)
+                        datetime: BlockChalk.formatDate
                     }
                 },
                 this.chalklist_model
@@ -79,7 +79,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         activate: function (ev) {
 
             Decafbad.Utils.setupListeners([
-                // ['chalklist', Mojo.Event.listTap, this.handleViewChalk],
+                ['chalklist', Mojo.Event.listTap, this.handleViewChalk],
                 ['chalklist', Mojo.Event.listDelete, this.handleBuryChalk]
             ], this);
 
@@ -201,47 +201,10 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Weekdays for _formatDate
-         */
-        weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-
-        /**
-         * Months for _formatDate
-         */
-        months: ['Jan','Feb','Mar','Apr','May','Jun',
-                    'Jul', 'Aug','Sep','Oct','Nov','Dec'],
-
-        /**
-         * Convert a date to a human-friendly string.
-         * 11:34pm on Tue, Sep 01
-         */
-        _formatDate: function(dt, model) {
-            if (typeof dt === 'undefined') { return ''; }
-
-            // I should probably use a date formatting library.
-            var out = [
-                dt.getHours() % 12, 
-                ':', 
-                ('00' + (''+dt.getMinutes())).substr(-2),
-                ( dt.getHours() < 12 ) ? 'am' : 'pm'
-            ];
-
-            if ( (new Date()).toDateString() !== dt.toDateString() ) {
-                out = out.concat([
-                    ' on ', this.weekdays[dt.getDay()], ', ',
-                    this.months[dt.getMonth()], ' ',
-                    dt.getDate()
-                ]);
-            }
-
-            return out.join('');
-        },
-
-        /**
          * Launch chalk detail view card
          */
         handleViewChalk: function (ev) {
-            this.controller.stageController.pushScene('chalk', ev.item.id);
+            this.controller.stageController.pushScene('chalk', ev.item);
         },
 
         /**

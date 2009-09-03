@@ -138,6 +138,32 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     },
 
     /**
+     * Create a new reply.
+     *
+     * @param {string}   msg               Chalk message contents
+     * @param {object}   gps_fix           GPS location fix
+     * @param {string}   gps_fix.longitude Location longitude
+     * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   user_id           User ID for chalk
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    createNewReply: function (reply_to, msg, gps_fix, user_id, on_success, on_failure) {
+        return this.apiRequest('/chalk/', {
+            method: 'post',
+            parameters: {
+                'replyTo': reply_to,
+                'msg':     msg,
+                'long':    gps_fix.longitude,
+                'lat':     gps_fix.latitude,
+                'user':    user_id
+            },
+            onSuccess: on_success,
+            onFailure: on_failure
+        });
+    },
+
+    /**
      * Perform some post-response fixing on chalk records.
      */
     _fixupChalk: function (chalk) {
@@ -166,7 +192,6 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
 
     * GET /user/userId/chalks - Get recent chalks written by a given user
     * GET /user/userId/replies - Get recent replies written to a given user
-    * POST /reply - Send a reply
      
      */
 

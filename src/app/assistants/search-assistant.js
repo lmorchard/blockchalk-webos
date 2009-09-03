@@ -1,5 +1,5 @@
 /**
- * @fileOverview Location search stage assistant
+ * @fileOverview Location search scene assistant
  * @author <a href="http://decafbad.com">l.m.orchard@pobox.com</a>
  * @version 0.1
  */
@@ -30,7 +30,7 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
                 'location',
                 {
                     'modelProperty': 'location',
-                    'hintText': $L('enter a location'),
+                    'hintText': $L('Enter a location'),
                     'multiline': true,
                     'enterSubmits': true,
                     'autoFocus': true,
@@ -61,6 +61,7 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
          * Unhook listeners on card deactivation.
          */
         deactivate: function (event) {
+            Decafbad.Utils.clearListeners(this);
         },
 
         /**

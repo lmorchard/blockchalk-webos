@@ -1,5 +1,5 @@
 /**
- * @fileOverview Chalk composition stage assistant
+ * @fileOverview Chalk composition scene assistant
  * @author <a href="http://decafbad.com">l.m.orchard@pobox.com</a>
  * @version 0.1
  */

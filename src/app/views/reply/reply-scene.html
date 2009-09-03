@@ -1,8 +1,43 @@
-<div class="reply-scene">
+<div class="compose-scene">
+    
     <div class="palm-page-header multi-line">
         <div class="palm-page-header-wrapper">
             <div class="title" ><img src="images/BlockChalkLogo.png" /></div>
-            <div class="subtitle">reply to a chalk here</div>
+            <div class="subtitle">reply to a chalk</div>
         </div>
     </div>
+
+    <div class="palm-list">
+        <div class="palm-row single">
+            <div class="palm-row-wrapper chalk">
+                <div id="contents">...</div>
+                <div id="meta">...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="palm-group">
+        <div class="palm-group-title" x-mojo-loc='' id="character-count"><span>256</span> chars, stay calm</div>
+        <div class="palm-list">
+            <div class="palm-row single" id="post-row">
+                <div class="palm-row-wrapper">
+                    <div class="textfield-group" x-mojo-focus-highlight="true">
+                        <div class="title">
+                            <div id="chalk-message" x-mojo-element="TextField"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chalk-post" x-mojo-element="Button" class="primary"></div>
+
+    <p class="helptext">
+        Here you can send a short reply to the person who wrote this chalk.
+        Replies are anonymous but not ultra-secure, so don't share your
+        Swiss bank account number.
+    </p>
+    
 </div>
+
