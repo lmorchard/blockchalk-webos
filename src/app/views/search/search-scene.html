@@ -1,20 +1,19 @@
-<div class="compose-scene">
+<div class="search-scene">
     
     <div class="palm-page-header multi-line">
         <div class="palm-page-header-wrapper">
             <div class="title" ><img src="images/BlockChalkLogo.png" /></div>
-            <div class="subtitle">new chalk, here</div>
+            <div class="subtitle">browse another location</div>
         </div>
     </div>
 
     <div class="palm-group">
-        <div class="palm-group-title" x-mojo-loc='' id="character-count"><span>256</span> chars, stay calm</div>
         <div class="palm-list">
             <div class="palm-row single" id="post-row">
                 <div class="palm-row-wrapper">
                     <div class="textfield-group" x-mojo-focus-highlight="true">
                         <div class="title">
-                            <div id="chalk-message" x-mojo-element="TextField"></div>
+                            <div id="location" x-mojo-element="TextField"></div>
                         </div>
                     </div>
                 </div>
@@ -22,12 +21,17 @@
         </div>
     </div>
 
-    <div id="chalk-post" x-mojo-element="Button" class="primary"></div>
+    <div id="search-button" x-mojo-element="Button" class="primary"></div>
 
     <p class="helptext">
-        Want to attach a map link? You can indicate your exact location
-        or another street address by adding it in brackets at the end,
-        eg. <em>[here]</em> or <em>[haight and ashbury san francisco ca]</em>
+        To see recent chalks at a specific location, enter a complete street
+        address (or a cross street), plus city and state.
+        e.g. <em>haight and ashbury san francisco ca</em>
     </p>
+
+    <div id="loading-scrim">
+        <div id="loading-spinner" x-mojo-element="Spinner"></div>
+    </div>
     
 </div>
+

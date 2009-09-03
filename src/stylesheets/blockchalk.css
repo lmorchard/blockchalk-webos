@@ -2,6 +2,13 @@
 body.palm-dark {
     background: #000;
 }
+p {
+    padding: 0 15px 0 15px;
+    margin: 0 0 0.25em 0;
+}
+p.helptext {
+    font-size: 0.75em;
+}
 .palm-dark .palm-page-header.multi-line {
     -webkit-border-image: none;
     padding: 0px 0px 0px 0px;
@@ -25,6 +32,9 @@ body.palm-dark {
 }
 .palm-dark .command-menu .palm-menu-fade {
     opacity: 0.3;
+}
+.palm-dark .textfield-group textarea {
+    color: #fff;
 }
 .home-scene #chalklist {
     margin-top: 5px;
@@ -54,7 +64,4 @@ body.palm-dark {
 .compose-scene #character-count.over span {
     font-weight: bold;
     color: #f44;
-}
-.compose-scene #chalk-message textarea {
-    color: #fff;
 }

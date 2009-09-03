@@ -19,19 +19,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
-            this.controller.setupWidget(
-                Mojo.Menu.appMenu, 
-                { omitDefaultItems: true }, 
-                {
-                    visible: true,
-                    items: [
-                        Mojo.Menu.editItem,
-                        { label: "Preferences...", command: 'MenuPreferences' },
-                        { label: "Where am I?", command: 'MenuWhereami' },
-                        { label: "About", command: 'MenuAbout' }
-                    ]
-                }
-            );
+            BlockChalk.setupGlobalMenu(this.controller);
             
             this.chalklist_model = { items: [ ] };
 
@@ -53,7 +41,13 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             var command_menu_model = {items: [
                 {items: [ 
                     { command:'NewChalk', label: $L('+ New ...'), 
-                        icon: 'send', shortcut: 'N' }
+                        icon: 'new', shortcut: 'N' }
+                ]},
+                {items: [ 
+                    { command:'Here', label: $L('Here'), 
+                    /*icon: 'search',*/ shortcut: 'H' },
+                    { command:'Search', label: $L('Search'), 
+                        icon: 'search', shortcut: 'S' }
                 ]},
                 {items: [ 
                     { command:'Refresh', label: $L('Refresh'), 
@@ -64,21 +58,15 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 Mojo.Menu.commandMenu, {}, command_menu_model
             );
 
+            Decafbad.Utils.setupLoadingSpinner(this);
+
             var chain = new Decafbad.Chain([
-                function (chain) {
-                    this.showLoadingSpinner();
-                    chain.next();
-                },
                 'loginToBlockChalk',
-                'acquireGPSFix',
-                'getLocalRecentChalks',
-                'updateChalkList',
                 function (chain) {
-                    this.hideLoadingSpinner();
+                    this.handleCommandHere();
                     chain.next();
                 }
             ], this, function (e) {
-                this.hideLoadingSpinner();
                 Decafbad.Utils.showSimpleBanner('Failure in startup');
                 Mojo.Log.error("ERROR ERROR ERROR %j", $A(arguments));        
             }).next();
@@ -100,8 +88,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 if (typeof ev.refresh !== 'undefined') {
                     this.handleCommandRefresh();
                 }
-                if (typeof ev.quick_refresh !== 'undefined') {
-                    this.handleCommandQuickRefresh();
+                if (typeof ev.search_location !== 'undefined') {
+                    this.useSearchLocation(ev.search_location, ev.search_text);
                 }
             }
 
@@ -160,6 +148,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }, 
                 onSuccess: function (gps_fix) {
                     BlockChalk.gps_fix = gps_fix;
+                    BlockChalk.search_location = gps_fix;
                     chain.next();
                 },
                 onError: chain.errorCallback('getCurrentPosition')
@@ -169,11 +158,11 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         /**
          * Get local recent chalks using current BlockChalk.gps_fix
          */
-        getLocalRecentChalks: function (chain) {
+        getSearchLocationRecentChalks: function (chain) {
             Decafbad.Utils.showSimpleBanner('Finding recent chalks...');
 
             BlockChalk.service.getRecentChalks(
-                BlockChalk.gps_fix, BlockChalk.user_id,
+                BlockChalk.search_location, BlockChalk.user_id,
                 chain.nextCallback(),
                 chain.errorCallback('getRecentChalks')
             );
@@ -184,6 +173,19 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         updateChalkList: function (chain, chalks) {
             Decafbad.Utils.showSimpleBanner('Welcome to the neighborhood!');
+
+            if (BlockChalk.gps_fix === BlockChalk.search_location) {
+                this.controller.get('subtitle')
+                    .update('recent chalks near you');
+            } else {
+                this.controller.get('subtitle').update(
+                    'recent chalks near <br />' + 
+                    '"' + BlockChalk.search_text + '" <br />' +
+                    '('+
+                    BlockChalk.search_location.latitude + ', ' +
+                    BlockChalk.search_location.longitude + ')'
+                );
+            }
 
             this.chalklist_model.items = chalks.map(function (chalk) {
                 chalk.time = chalk.datetime.toLocaleTimeString();
@@ -216,6 +218,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         _formatDate: function(dt, model) {
             if (typeof dt === 'undefined') { return ''; }
 
+            // I should probably use a date formatting library.
             var out = [
                 dt.getHours() % 12, 
                 ':', 
@@ -248,7 +251,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             BlockChalk.service.buryChalk(
                 ev.item.id, BlockChalk.user_id,
                 function (resp) {
-                    Decafbad.Utils.showSimpleBanner('Buried a chalk from view');
+                    // Decafbad.Utils.showSimpleBanner('Buried a chalk from view');
                 },
                 function (resp) {
                     Decafbad.Utils.showSimpleBanner('Chalk bury FAILED!');
@@ -275,75 +278,64 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
         
         /**
+         * Launch location search card.
+         */
+        handleCommandSearch: function (event) {
+            this.controller.stageController.pushScene('search');
+        },
+        
+        /**
+         * Refresh the displayed chalks, after first getting a new GPS fix
+         */
+        handleCommandHere: function (event) {
+            var chain = new Decafbad.Chain([
+                function (chain) {
+                    Decafbad.Utils.showLoadingSpinner(this);
+                    chain.next();
+                },
+                'acquireGPSFix',
+                'getSearchLocationRecentChalks',
+                'updateChalkList',
+                function (chain) {
+                    Decafbad.Utils.hideLoadingSpinner(this);
+                    chain.next();
+                }
+            ], this, function (e) {
+                Decafbad.Utils.hideLoadingSpinner(this);
+                Decafbad.Utils.showSimpleBanner('Failure in refresh');
+                Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
+            }).next();
+        },
+
+        /**
+         * Set a new search location and update display.
+         */
+        useSearchLocation: function (search_location, search_text) {
+            BlockChalk.search_location = search_location;
+            BlockChalk.search_text = search_text;
+            this.handleCommandRefresh();
+        },
+
+        /**
          * Refresh the displayed chalks, after first getting a new GPS fix
          */
         handleCommandRefresh: function (event) {
             var chain = new Decafbad.Chain([
                 function (chain) {
-                    this.showLoadingSpinner();
+                    Decafbad.Utils.showLoadingSpinner(this);
                     chain.next();
                 },
-                'acquireGPSFix',
-                'getLocalRecentChalks',
+                'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
-                    this.hideLoadingSpinner();
+                    Decafbad.Utils.hideLoadingSpinner(this);
                     chain.next();
                 }
             ], this, function (e) {
-                this.hideLoadingSpinner();
+                Decafbad.Utils.hideLoadingSpinner(this);
                 Decafbad.Utils.showSimpleBanner('Failure in refresh');
                 Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
             }).next();
-        },
-
-        /**
-         * Refresh the displayed chalks, after first getting a new GPS fix
-         */
-        handleCommandQuickRefresh: function (event) {
-            var chain = new Decafbad.Chain([
-                'getLocalRecentChalks',
-                'updateChalkList'
-            ], this, function (e) {
-                this.hideLoadingSpinner();
-                Decafbad.Utils.showSimpleBanner('Failure in refresh');
-                Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
-            }).next();
-        },
-
-        /**
-         * Show the loading spinner, setting it up first if necessary.
-         */
-        showLoadingSpinner: function () {
-            if (!this.scrim) { this.setupLoadingSpinner(); }
-            this.scrim.show();
-        },
-
-        /**
-         * Hide the loading spinner, setting it up first if necessary.
-         */
-        hideLoadingSpinner: function () {
-            if (!this.scrim) { this.setupLoadingSpinner(); }
-            this.scrim.hide();
-        },
-
-        /**
-         * Set up the loading spinner, including an instance of a semi-opaque
-         * scrim.
-         */
-        setupLoadingSpinner: function () {
-            this.controller.setupWidget(
-                "loading-spinner",
-                { spinnerSize: Mojo.Widget.spinnerLarge },
-                { spinning: true }
-            );
-            this.scrim = Mojo.View.createScrim(
-                this.controller.document,
-                { scrimClass:'palm-scrim' }
-            );
-            this.controller.get("loading-scrim")
-                .appendChild(this.scrim)
-                .appendChild($('loading-spinner'));
         },
 
         EOF:null

@@ -21,5 +21,9 @@
     {
         "source": "app\/assistants\/reply-assistant.js",
         "scenes": "reply"
+    },
+    {
+        "source": "app\/assistants\/search-assistant.js",
+        "scenes": "search"
     }
 ]

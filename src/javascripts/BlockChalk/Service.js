@@ -147,6 +147,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             time_parts = parts[1].split(':'),
             date = new Date();
 
+        // I should probably use a date parsing library.
         date.setUTCFullYear(date_parts[0]);
         date.setUTCMonth(date_parts[1] - 1);
         date.setUTCDate(date_parts[2]);

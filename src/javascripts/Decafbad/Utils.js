@@ -53,6 +53,42 @@ Decafbad.Utils = (function () { /** @lends Decafbad.Utils */
             });
         },
 
+        /**
+         * Show the loading spinner.
+         */
+        showLoadingSpinner: function (that) {
+            that.scrim.show();
+        },
+
+        /**
+         * Hide the loading spinner.
+         */
+        hideLoadingSpinner: function (that) {
+            that.scrim.hide();
+        },
+
+        /**
+         * Set up the loading spinner, including an instance of a semi-opaque
+         * scrim.
+         */
+        setupLoadingSpinner: function (that) {
+            that.scrim = null;
+            that.controller.setupWidget(
+                "loading-spinner",
+                { spinnerSize: Mojo.Widget.spinnerLarge },
+                { spinning: true }
+            );
+            that.scrim = Mojo.View.createScrim(
+                that.controller.document,
+                { scrimClass:'palm-scrim' }
+            );
+            that.controller.get("loading-scrim")
+                .appendChild(that.scrim)
+                .appendChild(that.controller.get('loading-spinner')); 
+
+            that.scrim.hide();
+        },
+
         EOF: null
     };
 

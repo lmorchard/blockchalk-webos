@@ -19,19 +19,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          */
         setup: function () {
 
-            this.controller.setupWidget(
-                Mojo.Menu.appMenu, 
-                { omitDefaultItems: true }, 
-                {
-                    visible: true,
-                    items: [
-                        Mojo.Menu.editItem,
-                        { label: "Preferences...", command: 'MenuWhereami' },
-                        { label: "Where Am I?", command: 'MenuWhereami' },
-                        { label: "About", command: 'MenuAbout' }
-                    ]
-                }
-            );
+            BlockChalk.setupGlobalMenu(this.controller);
 
             this.model = {
                 message: ''
@@ -41,7 +29,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 'chalk-message',
                 {
                     'modelProperty': 'message',
-                    'hintText': 'compose your chalk',
+                    'hintText': $L('Insert your genius prose here.'),
                     'multiline':true,
                     'enterSubmits':true,
                     'autoFocus':true,
@@ -52,8 +40,10 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             );
 
             this.controller.setupWidget(
-                'chalk-post', { label: $L('Post') }, {}
+                'chalk-post', { label: $L('post') }, {}
             );
+
+            this.updateRemainingChars();
 
         },
 
@@ -93,7 +83,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 counter.removeClassName('over');
             }
 
-            counter.update('<span>'+remaining+'</span> characters remaining');
+            counter.update('<span>'+remaining+'</span> chars, stay calm');
             return remaining;
         },
 
@@ -115,9 +105,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 this.model.message, BlockChalk.gps_fix, BlockChalk.user_id,
                 function (new_chalk) {
                     Decafbad.Utils.showSimpleBanner($L('New chalk created'));
-                    this.controller.stageController.popScene({ 
-                        quick_refresh: true 
-                    });
+                    this.controller.stageController.popScene({ refresh: true });
                 }.bind(this),
                 function (resp) {
                     this.controller.showAlertDialog({
