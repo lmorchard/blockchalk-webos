@@ -123,14 +123,7 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
                 }.bind(this),
 
                 function (resp) {
-                    this.controller.showAlertDialog({
-                        onChoose: function(value) {},
-                        title: $L("BlockChalk"),
-                        message: "FAILED " + $A(arguments).toJSON(),
-                        choices: [
-                            {label:$L("OK"), value:""}
-                        ]
-                    });
+                    Decafbad.Utils.showSimpleBanner($L('Reply failed!'));
                 }.bind(this)
 
             );

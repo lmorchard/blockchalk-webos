@@ -53,7 +53,9 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          */
         activate: function (event) {
             Decafbad.Utils.setupListeners([
-                ['chalk-reply-button', Mojo.Event.tap, this.handleReply]
+                ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
+                ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
+                //['chalk-share-button', Mojo.Event.tap, this.handleShare]
             ], this);
         },
 
@@ -71,10 +73,25 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
         },
 
         /**
-         *
+         * Handle tap on the reply button.
          */
         handleReply: function (ev) {
             this.controller.stageController.pushScene('reply', this.chalk);
+        },
+
+        /**
+         * Handle tap on the bury button
+         */
+        handleBury: function (ev) {
+            BlockChalk.service.buryChalk(
+                this.chalk.id, BlockChalk.user_id,
+                function (resp) {
+                    this.controller.stageController.popScene({ refresh: true });
+                }.bind(this),
+                function (resp) {
+                    Decafbad.Utils.showSimpleBanner($L('Bury failed!'));
+                }.bind(this)
+            );
         },
 
         EOF: null

@@ -99,7 +99,6 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {function} on_failure  failure callback
      */
     buryChalk: function (chalk_id, user_id, on_success, on_failure) {
-        Mojo.log("BURY CHALK! %s", chalk_id);
         return this.apiRequest('/chalk/'+chalk_id+'/bury', {
             method: 'post',
             parameters: {
@@ -140,7 +139,8 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     /**
      * Create a new reply.
      *
-     * @param {string}   msg               Chalk message contents
+     * @param {string}   reply_to          Chalk ID for reply
+     * @param {string}   msg               Reply message contents
      * @param {object}   gps_fix           GPS location fix
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
@@ -149,7 +149,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {function} on_failure        failure callback
      */
     createNewReply: function (reply_to, msg, gps_fix, user_id, on_success, on_failure) {
-        return this.apiRequest('/chalk/', {
+        return this.apiRequest('/reply/', {
             method: 'post',
             parameters: {
                 'replyTo': reply_to,
