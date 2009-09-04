@@ -55,7 +55,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             Decafbad.Utils.setupListeners([
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
-                //['chalk-share-button', Mojo.Event.tap, this.handleShare]
+                ['chalk-share-button', Mojo.Event.tap, this.handleShare]
             ], this);
         },
 

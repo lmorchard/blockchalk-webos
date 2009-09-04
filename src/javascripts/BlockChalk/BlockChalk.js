@@ -53,24 +53,11 @@ var BlockChalk = (function () {
          */
         formatDate: function(dt, model) {
             if (typeof dt === 'undefined') { return ''; }
-
-            // I should probably use a date formatting library.
-            var out = [
-                dt.getHours() % 12, 
-                ':', 
-                ('00' + (''+dt.getMinutes())).substr(-2),
-                ( dt.getHours() < 12 ) ? 'am' : 'pm'
-            ];
-
+            var out = new SimpleDateFormat('hh:mma').format(dt).toLowerCase();
             if ( (new Date()).toDateString() !== dt.toDateString() ) {
-                out = out.concat([
-                    ' on ', BlockChalk.weekdays[dt.getDay()], ', ',
-                    BlockChalk.months[dt.getMonth()], ' ',
-                    dt.getDate()
-                ]);
+                out += new SimpleDateFormat("' on 'EEE', 'MMM dd").format(dt);
             }
-
-            return out.join('');
+            return out;
         },
 
         /**

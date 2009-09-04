@@ -45,13 +45,15 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 ]},
                 {items: [ 
                     { command:'Here', label: $L('Here'), 
-                    /*icon: 'search',*/ shortcut: 'H' },
+                        icon: 'here', shortcut: 'H' },
+                    { command:'Replies', label: $L('Replies'), 
+                        icon: 'conversation', shortcut: 'R' },
                     { command:'Search', label: $L('Search'), 
                         icon: 'search', shortcut: 'S' }
                 ]},
                 {items: [ 
                     { command:'Refresh', label: $L('Refresh'), 
-                        icon: 'refresh', shortcut: 'R' }
+                        icon: 'refresh' }
                 ]}
             ]};
             this.controller.setupWidget(
@@ -172,7 +174,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Update the chalks list.
          */
         updateChalkList: function (chain, chalks) {
-            Decafbad.Utils.showSimpleBanner('Welcome to the neighborhood!');
 
             if (BlockChalk.gps_fix === BlockChalk.search_location) {
                 this.controller.get('subtitle')
@@ -191,7 +192,11 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 chalk.time = chalk.datetime.toLocaleTimeString();
                 chalk.date = chalk.datetime.toLocaleDateString();
                 return chalk;
-            }, this);
+            }, this).sort(function (chalk) {
+                var a = chalk.datetime.getTime(),
+                    b = chalk.datetime.getTime();
+                return (b - a);
+            });
 
             var chalk_list = this.controller.get('chalklist');
             chalk_list.mojo.noticeUpdatedItems(0, this.chalklist_model.items);
@@ -245,6 +250,13 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         handleCommandSearch: function (event) {
             this.controller.stageController.pushScene('search');
+        },
+        
+        /**
+         * Launch location search card.
+         */
+        handleCommandReplies: function (event) {
+            this.controller.stageController.pushScene('replies');
         },
         
         /**

@@ -1,4 +1,5 @@
 [
+    {"source": "javascripts\/vendor\/simpledateformat.js"},
     {"source": "javascripts\/Decafbad\/Decafbad.js"},
     {"source": "javascripts\/Decafbad\/Utils.js"},
     {"source": "javascripts\/Decafbad\/Chain.js"},
@@ -25,5 +26,9 @@
     {
         "source": "app\/assistants\/search-assistant.js",
         "scenes": "search"
+    },
+    {
+        "source": "app\/assistants\/replies-assistant.js",
+        "scenes": "replies"
     }
 ]

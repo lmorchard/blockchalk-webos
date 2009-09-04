@@ -69,6 +69,9 @@ p.helptext {
     font-style: italic;
     font-size: 14px;
 }
+.home-scene .palm-menu-icon.here {
+    background-image: url(../images/menu-icon-here.png);
+}
 .compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;
@@ -76,4 +79,22 @@ p.helptext {
 .compose-scene #character-count.over span {
     font-weight: bold;
     color: #f44;
+}
+.replies-scene #replylist .empty {
+    padding: 6px 0 10px 14px;
+}
+.replies-scene #replylist .palm-row.first {
+}
+.replies-scene #replylist .palm-row {
+    min-height: 0px;
+    padding: 6px 0 10px 0;
+}
+.replies-scene #replylist .palm-row .title {
+    padding: 0 14px 0 14px;
+    font-size: 18px;
+}
+.replies-scene #replylist .palm-row .subtitle {
+    margin: 4px 14px 0 14px;
+    font-style: italic;
+    font-size: 14px;
 }

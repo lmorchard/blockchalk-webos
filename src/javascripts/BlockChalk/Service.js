@@ -164,11 +164,43 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     },
 
     /**
+     * Get recent replies written to a given user
+     *
+     * @param {string}   user_id           User ID for chalk
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    getRecentReplies: function (user_id, on_success, on_failure) {
+        return this.apiRequest('/user/'+user_id+'/replies', {
+            method: 'get',
+            onSuccess: function (data, resp) {
+                on_success(data.map(this._fixupChalk, this), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
+
+    /**
      * Perform some post-response fixing on chalk records.
      */
     _fixupChalk: function (chalk) {
-        var dt = chalk.datetime,
-            parts = dt.split(' '),
+        chalk.datetime = this._parseDate(chalk.datetime);
+        return chalk;
+    },
+
+    /**
+     * Perform some post-response fixing on chalk records.
+     */
+    _fixupReply: function (reply) {
+        reply.datetime = this._parseDate(reply.datetime);
+        return chalk;
+    },
+
+    /**
+     * Parse the BlockChalk date format into a JS date.
+     */
+    _parseDate: function (dt) {
+        var parts = dt.split(' '),
             date_parts = parts[0].split('-'),
             time_parts = parts[1].split(':'),
             date = new Date();
@@ -181,9 +213,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         date.setUTCMinutes(time_parts[1]);
         date.setUTCSeconds(time_parts[2]);
 
-        chalk.datetime = date;
-
-        return chalk;
+        return date;
     },
 
     /*
@@ -191,7 +221,6 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     User-specific operations:
 
     * GET /user/userId/chalks - Get recent chalks written by a given user
-    * GET /user/userId/replies - Get recent replies written to a given user
      
      */
 
