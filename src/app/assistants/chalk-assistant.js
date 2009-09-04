@@ -94,6 +94,13 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             );
         },
 
+        /**
+         * Handle tap on the share button
+         */
+        handleShare: function (ev) {
+
+        },
+
         EOF: null
     };
 
