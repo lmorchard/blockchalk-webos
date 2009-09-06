@@ -80,6 +80,32 @@ var BlockChalk = (function () {
         },
 
         /**
+         * Acquire a GPS fix on our location, stash it in BlockChalk.gps_fix if
+         * successful.
+         *
+         * Intended to be bound to a scene assistant.
+         */
+        acquireGPSFix: function (chain) {
+            Decafbad.Utils.showSimpleBanner('Finding your block...');
+            this.controller.serviceRequest("palm://com.palm.location", { 
+                method: "getCurrentPosition", 
+                parameters: {
+                    maximumAge: 0,
+                    accuracy: 1,
+                    responseTime: 2,
+                    subscribe: false
+                }, 
+                onSuccess: function (gps_fix) {
+                    Decafbad.Utils.showSimpleBanner('Found your block');
+                    BlockChalk.gps_fix = gps_fix;
+                    BlockChalk.search_location = gps_fix;
+                    chain.next();
+                },
+                onError: chain.errorCallback('getCurrentPosition')
+            }); 
+        },
+
+        /**
          * Setup continuous GPS tracking
          */
         setupGPSTracking: function (that) {

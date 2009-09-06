@@ -19,7 +19,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
-            BlockChalk.setupGPSTracking(this);
+            // BlockChalk.setupGPSTracking(this);
             BlockChalk.setupGlobalMenu(this.controller);
             
             this.chalklist_model = { items: [ ] };
@@ -268,7 +268,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     Decafbad.Utils.showLoadingSpinner(this);
                     chain.next();
                 },
-                'acquireGPSFix',
+                BlockChalk.acquireGPSFix,
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
@@ -366,34 +366,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
             );
 
-        },
-
-        /**
-         * Acquire a GPS fix on our location, stash it in BlockChalk.gps_fix if
-         * successful.
-         */
-        acquireGPSFix: function (chain) {
-            try {
-            Decafbad.Utils.showSimpleBanner('Finding your block...');
-            this.controller.serviceRequest("palm://com.palm.location", { 
-                method: "getCurrentPosition", 
-                parameters: {
-                    maximumAge: 0,
-                    accuracy: 1,
-                    responseTime: 2,
-                    subscribe: false
-                }, 
-                onSuccess: function (gps_fix) {
-                    BlockChalk.gps_fix = gps_fix;
-                    BlockChalk.search_location = gps_fix;
-                    chain.next();
-                },
-                onError: chain.errorCallback('getCurrentPosition')
-            }); 
-            } catch (e) {
-                Mojo.log("FUCK GPS");
-                Mojo.Log.logException(e);
-            }
         },
 
         EOF:null

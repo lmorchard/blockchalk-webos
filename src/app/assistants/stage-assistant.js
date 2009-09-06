@@ -46,9 +46,7 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
                                 $L("BlockChalk"),
                             message: 
                                 (!BlockChalk.gps_fix) ?
-                                    "I don't know" :
-                                    "Lat: " + BlockChalk.gps_fix.latitude +
-                                    " Long: " + BlockChalk.gps_fix.longitude, 
+                                    "I don't know" : $H(BlockChalk.gps_fix).toJSON(),
                             choices: [
                                 {label:$L("OK"), value:""}
                             ]
