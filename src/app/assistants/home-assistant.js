@@ -340,7 +340,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         checkReplies: function (chain) {
 
-            // Create the reply counter, if not already present.
+            // Create the reply counter badge, if not already present.
             if (!this.controller.get('reply-count')) {
                 document.body.select('.conversation')[0].insert(
                     '<div id="reply-count">99</div>'
@@ -348,35 +348,41 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.controller.get('reply-count').hide();
             }
 
+            // Fetch replies, look for any new
             BlockChalk.service.getRecentReplies(
                 BlockChalk.user_id,
                 function (replies) {
+
                     if (!replies.length) {
+                        // Just hide the counter if there are none at all.
                         this.controller.get('reply-count').hide();
                     } else {
 
+                        // Try getting the timestamp of last replies read.
                         var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
                             replies_read = cookie.get(),
                             count = 0;
 
+                        // Count all the replies newer than the timestamp...
                         replies.each(function (reply) {
                             if (!replies_read || reply.datetime.getTime() > replies_read) {
                                 count++;
                             }
                         }, this);
 
-                        Mojo.log("REPLIES %s / %s / %s", 
-                            count, replies.length, replies_read);
-
                         if (count > 0) {
+                            // Show the batch with the new replies count
                             this.controller.get('reply-count').update(count);
                             this.controller.get('reply-count').show();
                         } else {
+                            // No new replies, so hide the counter.
                             this.controller.get('reply-count').hide();
                         }
 
                     }
+
                 }.bind(this),
+
                 function () {
                     Decafbad.Utils.showSimpleBanner('Replies get failed.');
                 }

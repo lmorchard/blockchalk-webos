@@ -94,7 +94,7 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
                 counter.removeClassName('over');
             }
 
-            counter.update('<span>'+remaining+'</span> chars, stay calm');
+            counter.update('<span>'+remaining+'</span> characters');
             return remaining;
         },
 
