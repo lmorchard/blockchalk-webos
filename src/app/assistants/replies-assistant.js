@@ -19,7 +19,20 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
-            BlockChalk.setupGlobalMenu(this.controller);
+            // Set the last replies read datestamp cookie
+            new Mojo.Model.Cookie('blockchalk_replies_read')
+                .put( (new Date()).getTime() );
+
+            this.controller.setupWidget(
+                Mojo.Menu.appMenu, 
+                { omitDefaultItems: true }, 
+                {
+                    visible: true,
+                    items: [
+                        { label: "Clear last read", command: 'MenuClearLastRead' }
+                    ]
+                }
+            );
             
             this.model = { replies: [ ] };
 
@@ -49,9 +62,9 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                         reply.time = reply.datetime.toLocaleTimeString();
                         reply.date = reply.datetime.toLocaleDateString();
                         return reply;
-                    }, this).sort(function (reply) {
-                        var a = reply.datetime.getTime(),
-                            b = reply.datetime.getTime();
+                    }, this).sort(function (ra, rb) {
+                        var a = ra.datetime.getTime(),
+                            b = rb.datetime.getTime();
                         return (b - a);
                     });
 
@@ -88,6 +101,20 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         cleanup: function (ev) {
             delete this.scrim;
+        },
+
+        /**
+         * Handle menu commands.
+         */
+        handleCommand: function (event) {
+            if (event.type === Mojo.Event.command) {
+                if ('MenuClearLastRead' === event.command) {
+                    new Mojo.Model.Cookie('blockchalk_replies_read').put(null);
+                    return Decafbad.Utils.showSimpleBanner(
+                        'Cleared replies last read cookie.'
+                    );
+                }
+            }
         },
 
         EOF:null

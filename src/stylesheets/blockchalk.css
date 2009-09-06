@@ -72,6 +72,21 @@ p.helptext {
 .home-scene .palm-menu-icon.here {
     background-image: url(../images/menu-icon-here.png);
 }
+.home-scene #reply-count {
+    position: absolute;
+    text-align: center;
+    top: 6px;
+    left: -1px;
+    width: 36px;
+    height: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    margin: 0px;
+    padding: 0px;
+    color: #fff;
+    background-image: url(../images/red-circle.png);
+}
 .compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;

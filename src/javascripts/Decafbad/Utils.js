@@ -37,7 +37,7 @@ Decafbad.Utils = (function () { /** @lends Decafbad.Utils */
                     typeof listener[0] == 'string' ?
                         this.controller.get(listener[0]) : listener[0],
                     listener[1],
-                    listener[2].bind(this)
+                    listener[2].bind(that)
                 ];
                 Mojo.Event.listen.apply(Mojo.Event, new_listener);
                 return new_listener;

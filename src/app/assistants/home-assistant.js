@@ -81,7 +81,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         activate: function (ev) {
 
             Decafbad.Utils.setupListeners([
-                ['chalklist', Mojo.Event.listTap, this.handleViewChalk],
+                ['chalklist', Mojo.Event.listTap, this.handleChalkTap],
                 ['chalklist', Mojo.Event.listDelete, this.handleBuryChalk]
             ], this);
 
@@ -95,6 +95,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
             }
 
+            this.checkReplies();
         },
 
         /**
@@ -192,9 +193,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 chalk.time = chalk.datetime.toLocaleTimeString();
                 chalk.date = chalk.datetime.toLocaleDateString();
                 return chalk;
-            }, this).sort(function (chalk) {
-                var a = chalk.datetime.getTime(),
-                    b = chalk.datetime.getTime();
+            }, this).sort(function (ca, cb) {
+                var a = ca.datetime.getTime(),
+                    b = cb.datetime.getTime();
                 return (b - a);
             });
 
@@ -208,8 +209,29 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         /**
          * Launch chalk detail view card
          */
-        handleViewChalk: function (ev) {
-            this.controller.stageController.pushScene('chalk', ev.item);
+        handleChalkTap: function (ev) {
+            this.controller.popupSubmenu({
+                placeNear: ev.target,
+                items: [
+                    { command: 'reply', label: 'Reply' },
+                    { command: 'view',  label: 'View' }/*,
+                    { command: 'share', label: 'Share' }*/
+                ],
+                onChoose: function (command) {
+                    switch (command) {
+                        case 'reply':
+                            return this.controller.stageController.pushScene(
+                                'reply', ev.item
+                            );
+                        case 'view':
+                            return this.controller.stageController.pushScene(
+                                'chalk', ev.item
+                            );
+                        case 'share':
+                            return; // TODO
+                    }
+                }.bind(this)
+            });
         },
 
         /**
@@ -311,6 +333,55 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 Decafbad.Utils.showSimpleBanner('Failure in refresh');
                 Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
             }).next();
+        },
+
+        /**
+         * Check for replies and update the counter if necessary.
+         */
+        checkReplies: function (chain) {
+
+            // Create the reply counter, if not already present.
+            if (!this.controller.get('reply-count')) {
+                document.body.select('.conversation')[0].insert(
+                    '<div id="reply-count">99</div>'
+                );
+                this.controller.get('reply-count').hide();
+            }
+
+            BlockChalk.service.getRecentReplies(
+                BlockChalk.user_id,
+                function (replies) {
+                    if (!replies.length) {
+                        this.controller.get('reply-count').hide();
+                    } else {
+
+                        var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
+                            replies_read = cookie.get(),
+                            count = 0;
+
+                        replies.each(function (reply) {
+                            if (!replies_read || reply.datetime.getTime() > replies_read) {
+                                count++;
+                            }
+                        }, this);
+
+                        Mojo.log("REPLIES %s / %s / %s", 
+                            count, replies.length, replies_read);
+
+                        if (count > 0) {
+                            this.controller.get('reply-count').update(count);
+                            this.controller.get('reply-count').show();
+                        } else {
+                            this.controller.get('reply-count').hide();
+                        }
+
+                    }
+                }.bind(this),
+                function () {
+                    Decafbad.Utils.showSimpleBanner('Replies get failed.');
+                }
+            );
+
         },
 
         EOF:null

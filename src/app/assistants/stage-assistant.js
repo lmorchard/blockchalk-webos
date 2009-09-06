@@ -27,9 +27,9 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
                         currentScene.showAlertDialog({
                             onChoose: function(value) {},
                             title: 
-                                $L("BlockChalk"),
+                                $L("BlockChalk for webOS"),
                             message: 
-                                $L("Copyright 2008-2009, l.m.orchard"),
+                                $L("by l.m.orchard@pobox.com, http://blockchalk.com/"),
                             choices: [
                                 {label:$L("OK"), value:""}
                             ]

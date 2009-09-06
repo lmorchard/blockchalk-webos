@@ -27,9 +27,9 @@ var BlockChalk = (function () {
                 {
                     visible: true,
                     items: [
-                        Mojo.Menu.editItem,
-                        { label: "Preferences...", command: 'MenuWhereami' },
-                        { label: "Where Am I?", command: 'MenuWhereami' },
+                        // Mojo.Menu.editItem,
+                        // { label: "Preferences...", command: 'MenuWhereami' },
+                        { label: "Where am I?", command: 'MenuWhereami' },
                         { label: "About", command: 'MenuAbout' }
                     ]
                 }
