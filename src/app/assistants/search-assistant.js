@@ -35,7 +35,8 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
                     'enterSubmits': true,
                     'autoFocus': true,
                     'changeOnKeyPress': false,
-                    'autoReplace': true
+                    'autoReplace': false,
+                    'requiresEnterKey': true
                 },
                 this.model
             );
@@ -53,6 +54,7 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
          */
         activate: function (event) {
             Decafbad.Utils.setupListeners([
+                ['location', Mojo.Event.propertyChange, this.handleSubmit],
                 ['search-button', Mojo.Event.tap, this.handleSubmit]
             ], this);
         },
