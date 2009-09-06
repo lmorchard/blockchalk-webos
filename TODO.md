@@ -1,4 +1,7 @@
+# v0.6.0
+
 * Fetch replies, maybe on a schedule?
-* Delete replies, if only via local deleted ID tracking
-* Add reply counter to button on home scene
-* Preferences card, including option to clear user ID
+* Background notifications on new replies while app running
+* Delete replies, if only via local storage of deleted IDs
+* Preferences card, including option to clear or change user ID
+* Preference to switch to on-demand GPS fixes rather than tracking.

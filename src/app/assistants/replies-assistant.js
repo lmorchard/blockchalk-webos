@@ -20,8 +20,8 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
         setup: function () {
 
             // Set the last replies read datestamp cookie
-            new Mojo.Model.Cookie('blockchalk_replies_read')
-                .put( (new Date()).getTime() );
+            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
+            cookie.put( (new Date()).getTime() );
 
             this.controller.setupWidget(
                 Mojo.Menu.appMenu, 
@@ -109,7 +109,8 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
         handleCommand: function (event) {
             if (event.type === Mojo.Event.command) {
                 if ('MenuClearLastRead' === event.command) {
-                    new Mojo.Model.Cookie('blockchalk_replies_read').put(null);
+                    var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
+                    cookie.put(null);
                     return Decafbad.Utils.showSimpleBanner(
                         'Cleared replies last read cookie.'
                     );

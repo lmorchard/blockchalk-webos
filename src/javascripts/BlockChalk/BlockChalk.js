@@ -79,6 +79,28 @@ var BlockChalk = (function () {
             this.service = new BlockChalk.Service();
         },
 
+        /**
+         * Setup continuous GPS tracking
+         */
+        setupGPSTracking: function (that) {
+            BlockChalk.tracking_handle = 
+                that.controller.serviceRequest("palm://com.palm.location", { 
+                    method: "startTracking", 
+                    parameters: {
+                        maximumAge: 0,
+                        accuracy: 1,
+                        responseTime: 2,
+                        subscribe: true
+                    }, 
+                    onSuccess: function (gps_fix) {
+                        BlockChalk.gps_fix = gps_fix;
+                        BlockChalk.search_location = gps_fix;
+                    },
+                    onError: function (resp) {
+                    }
+                }); 
+        },
+
         EOF: null
     };
 
