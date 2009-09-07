@@ -52,7 +52,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          */
         activate: function (event) {
             var chain = new Decafbad.Chain([
-                BlockChalk.acquireGPSFix,
+                BlockChalk.acquireGPSFix
             ], this, function (e) { }).next();
 
             Decafbad.Utils.setupListeners([
