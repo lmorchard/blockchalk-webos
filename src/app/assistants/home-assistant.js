@@ -321,23 +321,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         checkReplies: function (chain) {
 
-            // Try to ensure that reply checking doesn't happen too frequently
-            if (BlockChalk.last_replies_check) {
-                var last   = BlockChalk.last_replies_check,
-                    now    = new Date(),
-                    period = (now.getTime() - last.getTime());
-
-                if ( period < REPLIES_CHECK_PERIOD ) {
-                    return;
-                }
-            }
-            BlockChalk.last_replies_check = new Date();
-            Mojo.Log.error("CHECKING FOR REPLIES");
-
-            // Try getting the timestamp of last replies read.
-            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
-                replies_read = cookie.get();
-
             // Create the reply counter badge, if not already present.
             if (!this.controller.get('reply-count')) {
                 document.body.select('.conversation')[0].insert(
@@ -346,16 +329,37 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.controller.get('reply-count').hide();
             }
 
-            // Fetch replies, look for any new
+            // Try getting the timestamp of last replies read.
+            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
+                replies_read = cookie.get(),
+                badge = this.controller.get('reply-count');
+
+            // Try to ensure that reply checking doesn't happen too frequently
+            if (BlockChalk.last_replies_check) {
+                var last   = BlockChalk.last_replies_check,
+                    now    = new Date(),
+                    period = (now.getTime() - last.getTime());
+
+                if ( period < REPLIES_CHECK_PERIOD ) {
+                    if (replies_read > last.getTime()) {
+                        // Hide the badge if last view of replies happened
+                        // since last check.
+                        badge.hide();
+                    }
+                    return;
+                }
+            }
+            BlockChalk.last_replies_check = new Date();
+
+            // Fetch replies, look for any new since last fetch
             BlockChalk.service.getRecentReplies(
                 BlockChalk.user_id,
                 function (replies) {
 
                     if (!replies.length) {
                         // Just hide the counter if there are none at all.
-                        this.controller.get('reply-count').hide();
+                        badge.hide();
                     } else {
-
                         // Count all the replies newer than the timestamp...
                         var count = 0;
                         replies.each(function (reply) {
@@ -366,18 +370,15 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
                         if (count > 0) {
                             // Show the batch with the new replies count
-                            this.controller.get('reply-count').update(count);
-                            this.controller.get('reply-count').show();
+                            badge.update(count);
+                            badge.show();
                         } else {
                             // No new replies, so hide the counter.
-                            this.controller.get('reply-count').hide();
+                            badge.hide();
                         }
-
+                        badge = null;
                     }
-
-                }.bind(this),
-
-                function () { }
+                }.bind(this)
             );
 
         },
