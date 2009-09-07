@@ -15,6 +15,15 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
         setup: function() {
             this.controller.setWindowOrientation('free');
             this.controller.pushScene('home');
+
+            // Use a cookie to try to track the first run after installation.
+            var first_run_cookie = new Mojo.Model.Cookie('blockchalk_first_run'),
+                first_run_complete = first_run_cookie.get();
+            if (!first_run_complete) {
+                // Display help on first run, as an introduction.
+                this.controller.pushScene('help');
+            }
+            first_run_cookie.put(true);
         },
 
         handleCommand: function (event) {
@@ -22,6 +31,9 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
 
             if (event.type == Mojo.Event.command) {
                 switch (event.command) {
+
+                    case 'MenuHelp':
+                        return this.controller.pushScene('help');
 
                     case 'MenuAbout':
                         currentScene.showAlertDialog({

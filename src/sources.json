@@ -30,5 +30,9 @@
     {
         "source": "app\/assistants\/replies-assistant.js",
         "scenes": "replies"
+    },
+    {
+        "source": "app\/assistants\/help-assistant.js",
+        "scenes": "help"
     }
 ]

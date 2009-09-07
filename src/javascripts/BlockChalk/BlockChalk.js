@@ -30,6 +30,7 @@ var BlockChalk = (function () {
                         // Mojo.Menu.editItem,
                         // { label: "Preferences...", command: 'MenuWhereami' },
                         { label: "Where am I?", command: 'MenuWhereami' },
+                        { label: "Help...", command: 'MenuHelp' },
                         { label: "About", command: 'MenuAbout' }
                     ]
                 }
