@@ -54,7 +54,7 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
          */
         activate: function (event) {
             Decafbad.Utils.setupListeners([
-                ['location', Mojo.Event.propertyChange, this.handleSubmit],
+                ['location', Mojo.Event.propertyChange, this.handleChange],
                 ['search-button', Mojo.Event.tap, this.handleSubmit]
             ], this);
         },
@@ -70,6 +70,16 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
          * Clean everything up.
          */
         cleanup: function (event) {
+        },
+
+        /**
+         * Handle changes to the search field.
+         */
+        handleChange: function (ev) {
+            // If enter is pressed, pretend the button was tapped.
+            if (ev && Mojo.Char.isEnterKey(ev.originalEvent.keyCode)) {
+                this.handleSubmit(ev);
+            }
         },
 
         /**

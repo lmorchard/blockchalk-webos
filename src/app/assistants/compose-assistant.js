@@ -96,6 +96,11 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          */
         handleChange: function (ev) {
             var remaining = this.updateRemainingChars();
+
+            // If enter is pressed, pretend the post button was tapped.
+            if (ev && Mojo.Char.isEnterKey(ev.originalEvent.keyCode)) {
+                this.handleSubmit(ev);
+            }
         },
 
         /**
