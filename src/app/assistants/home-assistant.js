@@ -10,6 +10,9 @@ function HomeAssistant() {
 
 HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
+    // Only check for new replies every 3 minutes.
+    var REPLIES_CHECK_PERIOD = 1000 * 60 * 3;
+
     return {
 
         scrim: null,
@@ -318,6 +321,23 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         checkReplies: function (chain) {
 
+            // Try to ensure that reply checking doesn't happen too frequently
+            if (BlockChalk.last_replies_check) {
+                var last   = BlockChalk.last_replies_check,
+                    now    = new Date(),
+                    period = (now.getTime() - last.getTime());
+
+                if ( period < REPLIES_CHECK_PERIOD ) {
+                    return;
+                }
+            }
+            BlockChalk.last_replies_check = new Date();
+            Mojo.Log.error("CHECKING FOR REPLIES");
+
+            // Try getting the timestamp of last replies read.
+            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
+                replies_read = cookie.get();
+
             // Create the reply counter badge, if not already present.
             if (!this.controller.get('reply-count')) {
                 document.body.select('.conversation')[0].insert(
@@ -336,12 +356,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                         this.controller.get('reply-count').hide();
                     } else {
 
-                        // Try getting the timestamp of last replies read.
-                        var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
-                            replies_read = cookie.get(),
-                            count = 0;
-
                         // Count all the replies newer than the timestamp...
+                        var count = 0;
                         replies.each(function (reply) {
                             if (!replies_read || reply.datetime.getTime() > replies_read) {
                                 count++;
