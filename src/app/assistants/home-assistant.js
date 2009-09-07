@@ -377,9 +377,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
                 }.bind(this),
 
-                function () {
-                    Decafbad.Utils.showSimpleBanner('Replies get failed.');
-                }
+                function () { }
             );
 
         },
