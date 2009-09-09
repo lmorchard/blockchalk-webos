@@ -117,14 +117,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                     this.controller.stageController.popScene({ refresh: true });
                 }.bind(this),
                 function (resp) {
-                    this.controller.showAlertDialog({
-                        onChoose: function(value) {},
-                        title: $L("BlockChalk"),
-                        message: "FAILED " + $A(arguments).toJSON(),
-                        choices: [
-                            {label:$L("OK"), value:""}
-                        ]
-                    });
+                    Decafbad.Utils.showSimpleBanner($L('Chalk creation failed. Try again?'));
                 }.bind(this)
             );
 
