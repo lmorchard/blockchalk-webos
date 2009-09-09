@@ -67,7 +67,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             Decafbad.Utils.setupLoadingSpinner(this);
 
             var chain = new Decafbad.Chain([
-                'loginToBlockChalk',
+                BlockChalk.loginToBlockChalk,
                 function (chain) {
                     this.handleCommandHere();
                     chain.next();
@@ -115,28 +115,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         cleanup: function (ev) {
             delete this.scrim;
             Decafbad.Utils.clearListeners(this);
-        },
-
-        /**
-         * Login to BlockChalk by acquiring a new user ID, or using the ID
-         * previously cached in a cookie.
-         */
-        loginToBlockChalk: function (chain) {
-            Decafbad.Utils.showSimpleBanner('Logging into BlockChalk...');
-            var cookie  = new Mojo.Model.Cookie('blockchalk_user_id'),
-                user_id = cookie.get();
-            if (user_id) {
-                BlockChalk.user_id = user_id;
-                chain.next();
-            } else {
-                BlockChalk.service.getNewUserID(
-                    function (user_id) {
-                        cookie.put(BlockChalk.user_id = user_id);
-                        chain.next();
-                    },
-                    chain.errorCallback('getNewUserID')
-                );
-            }
         },
 
         /**

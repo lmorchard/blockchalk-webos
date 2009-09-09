@@ -19,6 +19,8 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
+            BlockChalk.setupGlobalMenu(this.controller);
+
             // Set the last replies read datestamp cookie
             var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
             cookie.put( (new Date()).getTime() );

@@ -153,3 +153,17 @@ p.helptext {
 .help-scene ul.icon-help li.refresh div.icon {
     background-image: url(../images/menu-icon-refresh.png);
 }
+.help-scene dl.menu-help {
+    margin: 0 0 0 0;
+    padding: 0 0 0 14px;
+}
+.help-scene dl.menu-help dt {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    font-style: italic;
+}
+.help-scene dl.menu-help dd {
+    font-size: 16px;
+    margin: 0 0 0 0;
+    padding: 5px 8px 16px 24px;
+}

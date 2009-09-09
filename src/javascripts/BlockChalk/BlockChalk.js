@@ -29,7 +29,8 @@ var BlockChalk = (function () {
                     items: [
                         // Mojo.Menu.editItem,
                         // { label: "Preferences...", command: 'MenuWhereami' },
-                        { label: "Where am I?", command: 'MenuWhereami' },
+                        { label: "Reset user ID", command: 'MenuResetUserID' },
+                        { label: "Report GPS status", command: 'MenuWhereami' },
                         { label: "Help...", command: 'MenuHelp' },
                         { label: "About", command: 'MenuAbout' }
                     ]
@@ -104,6 +105,33 @@ var BlockChalk = (function () {
                 },
                 onError: chain.errorCallback('getCurrentPosition')
             }); 
+        },
+
+        /**
+         * Login to BlockChalk by acquiring a new user ID, or using the ID
+         * previously cached in a cookie.
+         */
+        loginToBlockChalk: function (chain) {
+            var cookie  = new Mojo.Model.Cookie('blockchalk_user_id'),
+                user_id = cookie.get();
+
+            if (/^[0-9A-Za-z]+$/.test(user_id)) {
+                // Ensure the cookie contents are valid, ignore if not. Covers an
+                // error case where the server API returned HTML for the user ID
+                // on login.
+                BlockChalk.user_id = user_id;
+                chain.next();
+            } else {
+                // Otherwise, request a new user ID from the server
+                Decafbad.Utils.showSimpleBanner('Logging into BlockChalk...');
+                BlockChalk.service.getNewUserID(
+                    function (user_id) {
+                        cookie.put(BlockChalk.user_id = user_id);
+                        chain.next();
+                    },
+                    chain.errorCallback('getNewUserID')
+                );
+            }
         },
 
         /**

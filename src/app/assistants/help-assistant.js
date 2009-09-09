@@ -16,6 +16,8 @@ HelpAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Setup the application.
          */
         setup: function () {
+            BlockChalk.setupGlobalMenu(this.controller);
+
             this.controller.setupWidget(
                 'close', { label: $L('start chalking!') }, {}
             );
