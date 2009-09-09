@@ -112,20 +112,23 @@ var BlockChalk = (function () {
          * previously cached in a cookie.
          */
         loginToBlockChalk: function (chain) {
+            Mojo.log("loginToBlockChalk");
             var cookie  = new Mojo.Model.Cookie('blockchalk_user_id'),
                 user_id = cookie.get();
 
-            if (/^[0-9A-Za-z]+$/.test(user_id)) {
+            if (user_id && /^[0-9A-Za-z]+$/.test(user_id)) {
                 // Ensure the cookie contents are valid, ignore if not. Covers an
                 // error case where the server API returned HTML for the user ID
                 // on login.
                 BlockChalk.user_id = user_id;
+                Mojo.log("USER ID (cached) = %s", user_id);
                 chain.next();
             } else {
                 // Otherwise, request a new user ID from the server
                 Decafbad.Utils.showSimpleBanner('Logging into BlockChalk...');
                 BlockChalk.service.getNewUserID(
-                    function (user_id) {
+                    function (user_id, resp) {
+                        Mojo.log("USER ID (fresh) = %s", user_id);
                         cookie.put(BlockChalk.user_id = user_id);
                         chain.next();
                     },
