@@ -63,19 +63,38 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
          */
         handleCommandMenuResetUserID: function (event) {
 
-            // Clear the cookie
-            var cookie  = new Mojo.Model.Cookie('blockchalk_user_id');
-            cookie.put(null);
+            var currentScene = Mojo.Controller.stageController.activeScene();
+            currentScene.showAlertDialog({
+                title: $L("Reset your user ID?"),
+                message: $L(
+                    "Are you sure? After reset, you will no longer " + 
+                    "receive replies to chalks posted with your previous ID."
+                ),
+                choices: [ 
+                    {label:$L("Reset user ID"), value:"yes", type:"negative"},
+                    {label:$L("Cancel"),  value:"no", type:"dismiss"},
+                ],
+                onChoose: function(value) {
+                    if ('yes' == value) {
 
-            // Queue up a new get.
-            var chain = new Decafbad.Chain([
-                BlockChalk.loginToBlockChalk,
-                function (chain) {
-                    Decafbad.Utils.showSimpleBanner('User ID has been reset');
-                    Mojo.Log.error("USER ID = " + BlockChalk.user_id);
-                    return chain.next();
-                }
-            ], this).next();
+                        // Clear the cookie
+                        var cookie  = new Mojo.Model.Cookie('blockchalk_user_id');
+                        cookie.put(null);
+
+                        // Queue up a new get.
+                        var chain = new Decafbad.Chain([
+                            BlockChalk.loginToBlockChalk,
+                            function (chain) {
+                                Decafbad.Utils.showSimpleBanner('User ID has been reset');
+                                Mojo.Log.error("USER ID = " + BlockChalk.user_id);
+                                return chain.next();
+                            }
+                        ], this).next();
+
+                    }
+                }.bind(this)
+            });
+
 
         },
 

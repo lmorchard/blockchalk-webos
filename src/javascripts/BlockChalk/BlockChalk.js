@@ -28,11 +28,11 @@ var BlockChalk = (function () {
                     visible: true,
                     items: [
                         // Mojo.Menu.editItem,
-                        // { label: "Preferences...", command: 'MenuWhereami' },
-                        { label: "Reset user ID", command: 'MenuResetUserID' },
-                        { label: "Report GPS status", command: 'MenuWhereami' },
+                        { label: "About", command: 'MenuAbout' },
                         { label: "Help...", command: 'MenuHelp' },
-                        { label: "About", command: 'MenuAbout' }
+                        // { label: "Preferences...", command: 'MenuPreferences' },
+                        { label: "Reset user ID", command: 'MenuResetUserID' },
+                        { label: "Report GPS status", command: 'MenuWhereami' }
                     ]
                 }
             );
