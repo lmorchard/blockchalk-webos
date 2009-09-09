@@ -23,7 +23,8 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
             BlockChalk.setupGlobalMenu(this.controller);
 
             this.model = {
-                message: ''
+                message: '',
+                submit_disabled: false
             };
 
             this.controller.get('contents').update(
@@ -51,7 +52,12 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
             );
 
             this.controller.setupWidget(
-                'chalk-post', { label: $L('post') }, {}
+                'chalk-post',
+                { 
+                    label: $L('post'),
+                    disabledProperty: 'submit_disabled'
+                }, 
+                this.mode
             );
 
             this.updateRemainingChars();
@@ -118,8 +124,17 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
          * Handle a tap on the submit button to post the chalk.
          */
         handleSubmit: function (ev) {
+            
+            // Prevent duplicate submissions
+            if (this.model.submit_disabled) { return; }
+            
+            // Refuse to submit messages over the limit
             var remaining = this.updateRemainingChars();
             if (remaining < 0) { return; }
+
+            // Flag this submission as in progress
+            this.model.submit_disabled = true;
+            this.controller.modelChanged(this.model);
 
             BlockChalk.service.createNewReply(
 
@@ -127,12 +142,18 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
                 BlockChalk.gps_fix, BlockChalk.user_id,
 
                 function (new_chalk) {
+
                     Decafbad.Utils.showSimpleBanner($L('Reply sent'));
                     this.controller.stageController.popScene({ refresh: true });
+
                 }.bind(this),
 
                 function (resp) {
+                    
                     Decafbad.Utils.showSimpleBanner($L('Reply failed!'));
+                    this.model.submit_disabled = false;
+                    this.controller.modelChanged(this.model);
+
                 }.bind(this)
 
             );

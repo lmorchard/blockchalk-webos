@@ -23,7 +23,8 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
             BlockChalk.setupGlobalMenu(this.controller);
 
             this.model = {
-                location: ''
+                location: '',
+                submit_disabled: false
             };
 
             this.controller.setupWidget(
@@ -42,7 +43,12 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
             );
 
             this.controller.setupWidget(
-                'search-button', { label: $L('browse') }, {}
+                'search-button', 
+                { 
+                    label: $L('browse'),
+                    disabledProperty: 'submit_disabled'
+                }, 
+                this.model
             );
 
             Decafbad.Utils.setupLoadingSpinner(this);
@@ -87,7 +93,14 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
          */
         handleSubmit: function (ev) {
 
+            // Prevent duplicate submissions
+            if (this.model.submit_disabled) { return; }
+            
             Decafbad.Utils.showLoadingSpinner(this);
+
+            // Flag this submission as in progress
+            this.model.submit_disabled = true;
+            this.controller.modelChanged(this.model);
 
             // Use Google's geocoder to look up the location by query
             var req = new Ajax.Request('http://maps.google.com/maps/geo', {
@@ -120,6 +133,8 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
                 
                 onFailure: function (resp) {
                     Decafbad.Utils.hideLoadingSpinner(this);
+                    this.model.submit_disabled = false;
+                    this.controller.modelChanged(this.model);
                     Decafbad.Utils.showSimpleBanner('Location lookup failed');
                 }.bind(this)
 

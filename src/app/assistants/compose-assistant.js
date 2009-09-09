@@ -22,7 +22,8 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             BlockChalk.setupGlobalMenu(this.controller);
 
             this.model = {
-                message: ''
+                message: '',
+                submit_disabled: false
             };
 
             this.controller.setupWidget(
@@ -40,7 +41,12 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             );
 
             this.controller.setupWidget(
-                'chalk-post', { label: $L('post') }, {}
+                'chalk-post', 
+                { 
+                    label: $L('post'),
+                    disabledProperty: 'submit_disabled'
+                }, 
+                this.model
             );
 
             this.updateRemainingChars();
@@ -107,17 +113,35 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          * Handle a tap on the submit button to post the chalk.
          */
         handleSubmit: function (ev) {
+            
+            // Prevent duplicate submissions
+            if (this.model.submit_disabled) { return; }
+            
+            // Refuse to submit messages over the limit
             var remaining = this.updateRemainingChars();
             if (remaining < 0) { return; }
+
+            // Flag this submission as in progress
+            this.model.submit_disabled = true;
+            this.controller.modelChanged(this.model);
 
             BlockChalk.service.createNewChalk(
                 this.model.message, BlockChalk.gps_fix, BlockChalk.user_id,
                 function (new_chalk) {
+
                     Decafbad.Utils.showSimpleBanner($L('New chalk created'));
                     this.controller.stageController.popScene({ refresh: true });
+
                 }.bind(this),
                 function (resp) {
-                    Decafbad.Utils.showSimpleBanner($L('Chalk creation failed. Try again?'));
+
+                    Decafbad.Utils.showSimpleBanner(
+                        $L('Chalk creation failed. Try again?'));
+                    this.model.submit_disabled = false;
+                    this.controller.modelChanged(this.model);
+
+                    Mojo.Log.error("CHALK FAILED %j", resp);
+
                 }.bind(this)
             );
 
