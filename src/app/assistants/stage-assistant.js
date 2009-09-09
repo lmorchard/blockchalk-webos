@@ -51,8 +51,9 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
             var currentScene = Mojo.Controller.stageController.activeScene();
             currentScene.showAlertDialog({
                 onChoose: function(value) {},
-                title: $L("BlockChalk for webOS"),
-                message: $L("by l.m.orchard@pobox.com, http://blockchalk.com/"),
+                title: $L("BlockChalk for webOS, " + "v"+Mojo.appInfo.version),
+                message: $L("by l.m.orchard@pobox.com, "+
+                    "http://github.com/lmorchard/blockchalk-webos/"),
                 choices: [ {label:$L("OK"), value:""} ]
             });
             return;
