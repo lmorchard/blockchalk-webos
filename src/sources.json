@@ -4,6 +4,7 @@
     {"source": "javascripts\/Decafbad\/Utils.js"},
     {"source": "javascripts\/Decafbad\/Chain.js"},
     {"source": "javascripts\/BlockChalk\/BlockChalk.js"},
+    {"source": "javascripts\/BlockChalk\/Support.js"},
     {"source": "javascripts\/BlockChalk\/Service.js"},
     {"source": "app\/assistants\/app-assistant.js"},
     {"source": "app\/assistants\/stage-assistant.js"},
@@ -30,6 +31,10 @@
     {
         "source": "app\/assistants\/replies-assistant.js",
         "scenes": "replies"
+    },
+    {
+        "source": "app\/assistants\/instructions-assistant.js",
+        "scenes": "instructions"
     },
     {
         "source": "app\/assistants\/help-assistant.js",

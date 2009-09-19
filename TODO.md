@@ -1,4 +1,4 @@
-# v0.6.5
+# v0.6.6
 
 * Delete replies, if only via local storage of deleted IDs
 

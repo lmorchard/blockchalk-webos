@@ -113,56 +113,60 @@ p.helptext {
     font-style: italic;
     font-size: 14px;
 }
-.help-scene .help-text h2 {
+.help-scene {
+    background-color: rgb(57,62,67);
+    padding-bottom: 0.5em;
+}
+.instructions-scene .help-text h2 {
     font-size: 20px;
     padding: 0 14px 0 14px;
 }
-.help-scene .help-text p {
+.instructions-scene .help-text p {
     margin: 0 0 0.75em 0;
     font-size: 18px;
 }
-.help-scene ul.icon-help {
+.instructions-scene ul.icon-help {
     list-style: none;
     padding: 0 0 0 16px;
     margin: 0 0 0 0;
 }
-.help-scene ul.icon-help li {
+.instructions-scene ul.icon-help li {
     font-size: 18px;
     padding: 0 14px 18px 0px;
     margin: 0 0 0 0;
 }
-.help-scene ul.icon-help li div.icon {
+.instructions-scene ul.icon-help li div.icon {
     float: left;
     width: 32px;
     height: 32px;
     padding: 0 7px 0 0;
     background: transparent url(../images/menu-icon-new.png) no-repeat;
 }
-.help-scene ul.icon-help li.new div.icon {
+.instructions-scene ul.icon-help li.new div.icon {
     background-image: url(../images/menu-icon-new.png);
 }
-.help-scene ul.icon-help li.here div.icon {
+.instructions-scene ul.icon-help li.here div.icon {
     background-image: url(../images/menu-icon-here.png);
 }
-.help-scene ul.icon-help li.replies div.icon {
+.instructions-scene ul.icon-help li.replies div.icon {
     background-image: url(../images/menu-icon-conversation.png);
 }
-.help-scene ul.icon-help li.search div.icon {
+.instructions-scene ul.icon-help li.search div.icon {
     background-image: url(../images/menu-icon-search.png);
 }
-.help-scene ul.icon-help li.refresh div.icon {
+.instructions-scene ul.icon-help li.refresh div.icon {
     background-image: url(../images/menu-icon-refresh.png);
 }
-.help-scene dl.menu-help {
+.instructions-scene dl.menu-help {
     margin: 0 0 0 0;
     padding: 0 0 0 14px;
 }
-.help-scene dl.menu-help dt {
+.instructions-scene dl.menu-help dt {
     margin: 0 0 0 0;
     padding: 0 0 0 0;
     font-style: italic;
 }
-.help-scene dl.menu-help dd {
+.instructions-scene dl.menu-help dd {
     font-size: 16px;
     margin: 0 0 0 0;
     padding: 5px 8px 16px 24px;

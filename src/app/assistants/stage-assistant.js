@@ -21,7 +21,7 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
                 first_run_complete = first_run_cookie.get();
             if (!first_run_complete) {
                 // Display help on first run, as an introduction.
-                this.controller.pushScene('help');
+                this.controller.pushScene('instructions');
             }
             first_run_cookie.put(true);
         },
@@ -42,21 +42,6 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
          */
         handleCommandMenuHelp: function (event) {
             return this.controller.pushScene('help');
-        },
-
-        /**
-         * About dialog menu command
-         */
-        handleCommandMenuAbout: function (event) {
-            var currentScene = Mojo.Controller.stageController.activeScene();
-            currentScene.showAlertDialog({
-                onChoose: function(value) {},
-                title: $L("BlockChalk for webOS, " + "v"+Mojo.appInfo.version),
-                message: $L("by l.m.orchard@pobox.com, "+
-                    "http://github.com/lmorchard/blockchalk-webos/"),
-                choices: [ {label:$L("OK"), value:""} ]
-            });
-            return;
         },
 
         /**
@@ -95,7 +80,6 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
                     }
                 }.bind(this)
             });
-
 
         },
 

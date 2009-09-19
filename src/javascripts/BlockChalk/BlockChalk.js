@@ -29,10 +29,9 @@ var BlockChalk = (function () {
                     items: [
                         // Mojo.Menu.editItem,
                         { label: "Reset user ID", command: 'MenuResetUserID' },
-                        { label: "About BlockChalk", command: 'MenuAbout' },
                         { label: "Help...", command: 'MenuHelp' }
                         // { label: "Preferences...", command: 'MenuPreferences' },
-                        //{ label: "Report GPS status", command: 'MenuWhereami' }
+                        // { label: "Report GPS status", command: 'MenuWhereami' }
                     ]
                 }
             );
