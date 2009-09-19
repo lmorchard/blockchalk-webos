@@ -76,6 +76,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Handle tap on the reply button.
          */
         handleReply: function (ev) {
+            this.chalk.kind = 'chalk';
             this.controller.stageController.pushScene('reply', this.chalk);
         },
 

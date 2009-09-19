@@ -42,7 +42,7 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 'replylist',
                 {
                     reorderable:   false,
-                    swipeToDelete: true,
+                    swipeToDelete: false, // true,
                     itemTemplate:  'replies/replylist-item',
                     listTemplate:  'replies/replylist-container',
                     emptyTemplate: 'replies/replylist-empty',
@@ -54,6 +54,13 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.model
             );
 
+            this.refreshReplies();
+        },
+
+        /**
+         * Refresh the display of replies
+         */
+        refreshReplies: function() {
             Decafbad.Utils.setupLoadingSpinner(this);
 
             BlockChalk.service.getRecentReplies(
@@ -87,8 +94,19 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * React to card activation.
          */
         activate: function (ev) {
-            // Decafbad.Utils.setupListeners([
-            // ], this);
+
+            Decafbad.Utils.setupListeners([
+                ['replylist', Mojo.Event.listTap, this.handleReplyTap],
+                ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
+            ], this);
+
+            // Handle refresh cues coming back from other scenes.
+            if (typeof ev !== 'undefined') {
+                if (typeof ev.refresh !== 'undefined') {
+                    this.refreshReplies();
+                }
+            }
+
         },
 
         /**
@@ -118,6 +136,49 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     );
                 }
             }
+        },
+
+        /**
+         * Handle deletion of a reply
+         */
+        handleBuryReply: function (ev) {
+        },
+
+        /**
+         * Launch reply context menu
+         */
+        handleReplyTap: function (ev) {
+            this.controller.popupSubmenu({
+                placeNear: ev.target,
+                items: [
+                    { command: 'reply', label: 'Reply' }/*,
+                    { command: 'view',  label: 'View' },
+                    { command: 'share', label: 'Share' }*/
+                ],
+                onChoose: function (command) {
+                    if ('reply' == command) {
+                        ev.item.kind = 'reply';
+                        return this.controller.stageController.pushScene(
+                            'reply', ev.item
+                        );
+                    }
+                    /*
+                    switch (command) {
+                        case 'reply':
+                            ev.item.kind = 'reply';
+                            return this.controller.stageController.pushScene(
+                                'reply', ev.item
+                            );
+                        case 'view':
+                            return this.controller.stageController.pushScene(
+                                'chalk', ev.item
+                            );
+                        case 'share':
+                        return; // TODO
+                    }
+                    */
+                }.bind(this)
+            });
         },
 
         EOF:null

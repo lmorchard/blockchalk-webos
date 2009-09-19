@@ -73,7 +73,7 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
                 ),
                 choices: [ 
                     {label:$L("Reset user ID"), value:"yes", type:"negative"},
-                    {label:$L("Cancel"),  value:"no", type:"dismiss"},
+                    {label:$L("Cancel"),  value:"no", type:"dismiss"}
                 ],
                 onChoose: function(value) {
                     if ('yes' == value) {

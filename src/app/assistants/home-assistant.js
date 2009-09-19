@@ -166,7 +166,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Launch chalk detail view card
+         * Launch chalk context menu
          */
         handleChalkTap: function (ev) {
             this.controller.popupSubmenu({
@@ -179,6 +179,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 onChoose: function (command) {
                     switch (command) {
                         case 'reply':
+                            ev.item.kind = 'chalk';
                             return this.controller.stageController.pushScene(
                                 'reply', ev.item
                             );

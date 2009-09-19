@@ -5,8 +5,8 @@
  */
 /*jslint laxbreak: true */
 /*global Decafbad, BlockChalk, Mojo, $, $L, $A, $H, SimpleDateFormat */
-function ReplyAssistant(chalk) {
-    this.chalk = chalk;
+function ReplyAssistant(reply_item) {
+    this.reply_item = reply_item;
 }
 
 ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
@@ -27,14 +27,20 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
                 submit_disabled: false
             };
 
+            if (this.reply_item.kind) {
+                this.controller.get('kind').update(
+                    this.reply_item.kind.escapeHTML()
+                );
+            }
+
             this.controller.get('contents').update(
-                this.chalk.contents.escapeHTML()
+                this.reply_item.contents.escapeHTML()
             );
 
             this.controller.get('meta').update([
-                BlockChalk.formatDate(this.chalk.datetime),
+                BlockChalk.formatDate(this.reply_item.datetime),
                 ", ",
-                this.chalk.distance
+                this.reply_item.distance
             ].join('').escapeHTML());
 
             this.controller.setupWidget(
@@ -57,7 +63,7 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
                     label: $L('post'),
                     disabledProperty: 'submit_disabled'
                 }, 
-                this.mode
+                this.model
             );
 
             this.updateRemainingChars();
@@ -138,7 +144,7 @@ ReplyAssistant.prototype = (function () { /** @lends ReplyAssistant# */
 
             BlockChalk.service.createNewReply(
 
-                this.chalk.id, this.model.message, 
+                this.reply_item.id, this.model.message, 
                 BlockChalk.gps_fix, BlockChalk.user_id,
 
                 function (new_chalk) {
