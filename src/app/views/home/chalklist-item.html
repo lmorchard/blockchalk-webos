@@ -1,6 +1,13 @@
 <div class="palm-row">
     <div class="palm-row-wrapper" id="blockchalk-#{id}">
-        <div class="title">#{contents}</div>
-        <div class="subtitle">#{datetimeFormatted}, #{distance}</div>
+        <div class="title #{hasLocation} #{hasChalkback}">
+            <span class="contents">#{contents}</span>
+            <img class="location-icon" src="images/1x1.png" />
+            <img class="chalkback-icon" src="images/1x1.png" />
+        </div>
+        <div class="subtitle">
+            <span class="datetime">#{datetimeFormatted}</span>
+            <span class="distance">, #{distance}</span>
+        </div>
     </div>
 </div>

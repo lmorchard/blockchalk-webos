@@ -20,12 +20,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
 
             BlockChalk.setupGlobalMenu(this.controller);
 
-            this.controller.setupWidget(
-                'search-button', { label: $L('browse') }, {}
-            );
-
-            Mojo.log("VIEWING CHALK %j", this.chalk);
-
             this.controller.get('contents').update(
                 this.chalk.contents.escapeHTML()
             );
@@ -36,8 +30,31 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.chalk.distance
             ].join('').escapeHTML());
 
+            // Hide the location button, or set it up if a place is present.
+            if (!this.chalk.place) {
+                this.controller.get('chalk-view-location-button').remove();
+            } else {
+                this.controller.setupWidget(
+                    'chalk-view-location-button', 
+                    { label: $L('View attached location') }, {}
+                );
+            }
+
+            // Hide the view chalkback button, unless there's a chalkbackTo
+            if (!this.chalk.chalkbackTo) {
+                this.controller.get('chalk-view-chalkback-button').remove();
+            } else {
+                this.controller.setupWidget(
+                    'chalk-view-chalkback-button', 
+                    { label: $L('See original chalk') }, {}
+                );
+            }
+
             this.controller.setupWidget(
-                'chalk-reply-button', { label: $L('Reply') }, {}
+                'chalk-chalkback-button', { label: $L('Chalkback') }, {}
+            );
+            this.controller.setupWidget(
+                'chalk-reply-button', { label: $L('Reply privately') }, {}
             );
             this.controller.setupWidget(
                 'chalk-bury-button', { label: $L('Bury') }, {}
@@ -52,11 +69,26 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Hook up listeners on card activation.
          */
         activate: function (event) {
-            Decafbad.Utils.setupListeners([
+            var listeners = [
+                ['chalk-chalkback-button', Mojo.Event.tap, this.handleChalkback],
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
-                ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
-                ['chalk-share-button', Mojo.Event.tap, this.handleShare]
-            ], this);
+                ['chalk-bury-button', Mojo.Event.tap, this.handleBury]
+                //['chalk-share-button', Mojo.Event.tap, this.handleShare]
+            ];
+            if (this.chalk.place) {
+                listeners.push([
+                    'chalk-view-location-button', 
+                    Mojo.Event.tap, this.handleViewLocation
+                ]);
+            }
+            if (this.chalk.chalkbackTo) {
+                listeners.push([
+                    'chalk-view-chalkback-button', 
+                    Mojo.Event.tap, this.handleViewChalkback
+                ]);
+            }
+
+            Decafbad.Utils.setupListeners(listeners, this);
         },
 
         /**
@@ -81,6 +113,15 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
         },
 
         /**
+         * Handle tap on the chalkback reply button.
+         */
+        handleChalkback: function (ev) {
+            return this.controller.stageController.pushScene(
+                'compose', this.chalk
+            );
+        },
+
+        /**
          * Handle tap on the bury button
          */
         handleBury: function (ev) {
@@ -91,6 +132,36 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 }.bind(this),
                 function (resp) {
                     Decafbad.Utils.showSimpleBanner($L('Bury failed!'));
+                }.bind(this)
+            );
+        },
+
+        /**
+         * Handle tap on the view attached location button
+         */
+        handleViewLocation: function (ev) {
+            this.controller.serviceRequest('palm://com.palm.applicationManager', {
+                method: 'launch',
+                parameters: {
+                    id: "com.palm.app.maps",
+                    params: { "query": this.chalk.place }
+                }
+            });
+        },
+
+        /**
+         * Handle tap on the view original chalkback button
+         */
+        handleViewChalkback: function (ev) {
+            BlockChalk.service.getChalk(
+                this.chalk.chalkbackTo,
+                function (chalk) {
+                    this.controller.stageController.pushScene('chalk', chalk);
+                }.bind(this),
+                function (resp) {
+                    Decafbad.Utils.showSimpleBanner(
+                        $L('Original chalk not found!')
+                    );
                 }.bind(this)
             );
         },

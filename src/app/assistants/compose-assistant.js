@@ -5,7 +5,8 @@
  */
 /*jslint laxbreak: true */
 /*global Decafbad, BlockChalk, Mojo, $, $L, $A, $H, SimpleDateFormat */
-function ComposeAssistant() {
+function ComposeAssistant(chalkback_item) {
+    this.chalkback_item = chalkback_item;
 }
 
 ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
@@ -25,6 +26,20 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 message: '',
                 submit_disabled: false
             };
+
+            if (!this.chalkback_item) {
+                this.controller.get('chalkback').remove();
+            } else {
+                this.controller.get('contents').update(
+                    this.chalkback_item.contents.escapeHTML()
+                );
+
+                this.controller.get('meta').update([
+                    BlockChalk.formatDate(this.chalkback_item.datetime),
+                    ", ",
+                    this.chalkback_item.distance
+                ].join('').escapeHTML());
+            }
 
             this.controller.setupWidget(
                 'chalk-message',
@@ -47,6 +62,11 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                     disabledProperty: 'submit_disabled'
                 }, 
                 this.model
+            );
+
+            this.controller.get('subtitle').update(
+                (this.chalkback_item) ?
+                    $L('chalkback') : $L('new chalk, here')
             );
 
             this.updateRemainingChars();
@@ -127,6 +147,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
 
             BlockChalk.service.createNewChalk(
                 this.model.message, BlockChalk.gps_fix, BlockChalk.user_id,
+                (this.chalkback_item) ? this.chalkback_item.id : null,
                 function (new_chalk) {
 
                     Decafbad.Utils.showSimpleBanner($L('New chalk created'));

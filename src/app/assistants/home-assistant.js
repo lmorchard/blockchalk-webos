@@ -135,20 +135,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         updateChalkList: function (chain, chalks) {
 
-            if (BlockChalk.gps_fix === BlockChalk.search_location) {
-                this.controller.get('subtitle')
-                    .update('recent chalks near you');
-            } else {
-                this.controller.get('subtitle').update(
-                    'recent chalks near <br />' + 
-                    '"' + BlockChalk.search_text + '" <br />' +
-                    '('+
-                    BlockChalk.search_location.latitude + ', ' +
-                    BlockChalk.search_location.longitude + ')'
-                );
-            }
-
             this.chalklist_model.items = chalks.map(function (chalk) {
+                chalk.hasLocation = (chalk.place) ? 'has-location' : '';
+                chalk.hasChalkback = (chalk.chalkbackTo) ? 'has-chalkback' : '';
                 chalk.time = chalk.datetime.toLocaleTimeString();
                 chalk.date = chalk.datetime.toLocaleDateString();
                 return chalk;
@@ -161,37 +150,62 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             var chalk_list = this.controller.get('chalklist');
             chalk_list.mojo.noticeUpdatedItems(0, this.chalklist_model.items);
             chalk_list.mojo.setLength(this.chalklist_model.items.length);
+
+            if (BlockChalk.gps_fix === BlockChalk.search_location) {
+                var neighborhood = this.determineNeighborhoodFromChalks();
+                this.controller.get('subtitle').update(
+                    'Looks like you\'re in<br />' +
+                    '<span class="neighborhood">' + neighborhood + '</span>'
+                );
+            } else {
+                this.controller.get('subtitle').update(
+                    'Chalks nearby<br />' +
+                    '"' + BlockChalk.search_text + '" <br />' +
+                    '('+
+                    BlockChalk.search_location.latitude + ', ' +
+                    BlockChalk.search_location.longitude + ')'
+                );
+            }
             
             chain.next();
+        },
+
+        /**
+         * Count the neighborhoods found in the list of chalks, return the name
+         * of the neighborhood with the most appearances.
+         */
+        determineNeighborhoodFromChalks: function () {
+            var counts = {},
+                top = {},
+                neighborhood = '';
+
+            this.chalklist_model.items.forEach(function (chalk, idx) {
+                var curr = chalk.neighborhood;
+                if (!counts[curr]) {
+                    // First appearance of this neighborhood.
+                    top = { n: curr, c: 0 };
+                    counts[curr] = 1;
+                } else {
+                    // Increment the neighborhood count.
+                    counts[curr]++;
+                    if (counts[curr] > top.c) {
+                        // This neighborhood is now the top count.
+                        top = { n: curr, c: counts[curr] };
+                        neighborhood = curr;
+                    }
+                }
+            }, this);
+
+            return neighborhood;
         },
 
         /**
          * Launch chalk context menu
          */
         handleChalkTap: function (ev) {
-            this.controller.popupSubmenu({
-                placeNear: ev.target,
-                items: [
-                    { command: 'reply', label: 'Reply' },
-                    { command: 'view',  label: 'View' }/*,
-                    { command: 'share', label: 'Share' }*/
-                ],
-                onChoose: function (command) {
-                    switch (command) {
-                        case 'reply':
-                            ev.item.kind = 'chalk';
-                            return this.controller.stageController.pushScene(
-                                'reply', ev.item
-                            );
-                        case 'view':
-                            return this.controller.stageController.pushScene(
-                                'chalk', ev.item
-                            );
-                        case 'share':
-                            return; // TODO
-                    }
-                }.bind(this)
-            });
+            return this.controller.stageController.pushScene(
+                'chalk', ev.item
+            );
         },
 
         /**

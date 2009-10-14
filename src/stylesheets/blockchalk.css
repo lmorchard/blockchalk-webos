@@ -23,12 +23,16 @@ p.helptext {
 }
 .palm-dark .palm-page-header.multi-line .subtitle {
     color: #fff;
-    font-size: 22px;
-    font-weight: bold;
+    font-size: 19px;
+    font-weight: normal;
     background: #000;
     margin: -4px 0px 4px 0px;
     padding: 0px 0px 6px 14px;
     border-bottom: 2px solid #fff;
+}
+.palm-dark .palm-page-header.multi-line .subtitle .neighborhood {
+    font-size: 22px;
+    font-weight: bold;
 }
 .palm-dark .command-menu .palm-menu-fade {
     opacity: 0.3;
@@ -68,6 +72,19 @@ p.helptext {
     margin: 4px 14px 0 14px;
     font-style: italic;
     font-size: 14px;
+}
+.chalkback-icon,
+.location-icon {
+    display: none;
+    width: 18px; height: 18px;
+}
+.has-location .location-icon {
+    display: inline;
+    background: transparent url(../images/compass.png) no-repeat 0 0;
+}
+.has-chalkback .chalkback-icon {
+    display: inline;
+    background: transparent url(../images/chalkback.png) no-repeat 0 0;
 }
 .home-scene .palm-menu-icon.here {
     background-image: url(../images/menu-icon-here.png);

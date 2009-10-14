@@ -28,9 +28,9 @@ var BlockChalk = (function () {
                     visible: true,
                     items: [
                         // Mojo.Menu.editItem,
-                        { label: "Reset user ID", command: 'MenuResetUserID' },
+                        //{ label: "Reset user ID", command: 'MenuResetUserID' },
+                        { label: "Preferences...", command: 'MenuPreferences' },
                         { label: "Help...", command: 'MenuHelp' }
-                        // { label: "Preferences...", command: 'MenuPreferences' },
                         // { label: "Report GPS status", command: 'MenuWhereami' }
                     ]
                 }
@@ -65,19 +65,39 @@ var BlockChalk = (function () {
          * Global app-wide initialization.
          */
         onLaunch: function (launch_params) {
-            // this.refreshPrefs();
-            // this.initModel();
             this.initService();
-        },
-
-        refreshPrefs: function () {
+            // this.initModel();
+            this.refreshPrefs();
         },
 
         initModel: function () {
         },
 
+        /**
+         * Initialize the web service
+         */
         initService: function () {
             this.service = new BlockChalk.Service();
+        },
+
+        /**
+         * Refresh preferences from cookie.
+         */
+        refreshPrefs: function () {
+            this.prefs_cookie = new Mojo.Model.Cookie('blockchalk_prefs');
+            this.prefs_model = this.prefs_cookie.get() || {
+                profanity_filter: false
+            };
+
+            this.service.profanity_filter = this.prefs_model.profanity_filter;
+        },
+
+        /**
+         * Write and refresh changes to prefs.
+         */
+        updatePrefs: function () {
+            this.prefs_cookie.put(this.prefs_model);
+            this.refreshPrefs();
         },
 
         /**
@@ -100,6 +120,7 @@ var BlockChalk = (function () {
                     Decafbad.Utils.showSimpleBanner('Found your block');
                     BlockChalk.gps_fix = gps_fix;
                     BlockChalk.search_location = gps_fix;
+                    Mojo.log('GPS fix acquired: %j', gps_fix);
                     chain.next();
                 },
                 onError: chain.errorCallback('getCurrentPosition')

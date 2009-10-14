@@ -19,6 +19,8 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             user_agent: 'blockchalk-decafbad-webos'
         }, options || {});
 
+        this.profanity_filter = false;
+
         this.user_id = null;
 
         return this;
@@ -120,14 +122,15 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
      */
-    createNewChalk: function (msg, gps_fix, user_id, on_success, on_failure) {
+    createNewChalk: function (msg, gps_fix, user_id, chalkback_to, on_success, on_failure) {
         return this.apiRequest('/chalk/', {
             method: 'post',
             parameters: {
                 'msg':  msg,
                 'long': gps_fix.longitude,
                 'lat':  gps_fix.latitude,
-                'user': user_id
+                'user': user_id,
+                'chalkbackTo': chalkback_to
             },
             onSuccess: function (data, resp) {
                 on_success(this._fixupChalk(data), resp);
@@ -238,6 +241,10 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         options.evalJSON = 'force';
         options.parameters = options.parameters || {};
         options.parameters.format = 'json';
+
+        if (this.profanity_filter) {
+            options.parameters.profanityFilter = 'true';
+        }
 
         var orig_on_success = options.onSuccess;
         options.onSuccess = function (resp) {
