@@ -86,7 +86,7 @@ var BlockChalk = (function () {
         refreshPrefs: function () {
             this.prefs_cookie = new Mojo.Model.Cookie('blockchalk_prefs');
             this.prefs_model = this.prefs_cookie.get() || {
-                profanity_filter: false
+                profanity_filter: true
             };
 
             this.service.profanity_filter = this.prefs_model.profanity_filter;

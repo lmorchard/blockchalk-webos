@@ -30,6 +30,17 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.chalk.distance
             ].join('').escapeHTML());
 
+            if (BlockChalk.gps_fix !== BlockChalk.search_location) {
+                // User browsing another location, disallow chalkbacks.
+                this.controller.get('chalkback-wrapper').remove();
+                this.controller.get('reply-wrapper').width = "100%";
+            } else {
+                // Chalkbacks allowed here, so setup up the button.
+                this.controller.setupWidget(
+                    'chalk-chalkback-button', { label: $L('Chalkback') }, {}
+                );
+            }
+
             // Hide the location button, or set it up if a place is present.
             if (!this.chalk.place) {
                 this.controller.get('chalk-view-location-button').remove();
@@ -51,9 +62,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             }
 
             this.controller.setupWidget(
-                'chalk-chalkback-button', { label: $L('Chalkback') }, {}
-            );
-            this.controller.setupWidget(
                 'chalk-reply-button', { label: $L('Reply privately') }, {}
             );
             this.controller.setupWidget(
@@ -70,18 +78,26 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          */
         activate: function (event) {
             var listeners = [
-                ['chalk-chalkback-button', Mojo.Event.tap, this.handleChalkback],
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury]
                 //['chalk-share-button', Mojo.Event.tap, this.handleShare]
             ];
+            if (BlockChalk.gps_fix === BlockChalk.search_location) {
+                // Wire up the chalkback button if allowed.
+                listeners.push([
+                    'chalk-chalkback-button', 
+                    Mojo.Event.tap, this.handleChalkback
+                ]);
+            }
             if (this.chalk.place) {
+                // Wire up the location button if necessary.
                 listeners.push([
                     'chalk-view-location-button', 
                     Mojo.Event.tap, this.handleViewLocation
                 ]);
             }
             if (this.chalk.chalkbackTo) {
+                // Wire up the view chalkback button if necessary.
                 listeners.push([
                     'chalk-view-chalkback-button', 
                     Mojo.Event.tap, this.handleViewChalkback
@@ -125,15 +141,28 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Handle tap on the bury button
          */
         handleBury: function (ev) {
-            BlockChalk.service.buryChalk(
-                this.chalk.id, BlockChalk.user_id,
-                function (resp) {
-                    this.controller.stageController.popScene({ refresh: true });
-                }.bind(this),
-                function (resp) {
-                    Decafbad.Utils.showSimpleBanner($L('Bury failed!'));
+            this.controller.showAlertDialog({
+                title: $L("Bury this chalk?"),
+                message: $L("Once buried, you will not see this chalk again."),
+                choices: [
+                    {label:$L("Bury"), value:"yes", type:"negative"},
+                    {label:$L("Cancel"),  value:"no", type:"dismiss"}
+                ],
+                onChoose: function(value) {
+                    if ('yes' == value) {
+                        BlockChalk.service.buryChalk(
+                            this.chalk.id, BlockChalk.user_id,
+                            function (resp) {
+                                this.controller.stageController
+                                    .popScene({ refresh: true });
+                            }.bind(this),
+                            function (resp) {
+                                Decafbad.Utils.showSimpleBanner($L('Bury failed!'));
+                            }.bind(this)
+                        );
+                    }
                 }.bind(this)
-            );
+            });
         },
 
         /**

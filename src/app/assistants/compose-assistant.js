@@ -45,7 +45,9 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 'chalk-message',
                 {
                     'modelProperty': 'message',
-                    'hintText': $L('Insert your genius prose here.'),
+                    'hintText': (!this.chalkback_item) ?
+                        $L('Insert your genius prose here.') :
+                        $L('Use this space to "chalkback"'),
                     'multiline':true,
                     'enterSubmits':true,
                     'autoFocus':true,
@@ -64,10 +66,14 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 this.model
             );
 
-            this.controller.get('subtitle').update(
-                (this.chalkback_item) ?
-                    $L('chalkback') : $L('new chalk, here')
-            );
+            if (!this.chalkback_item) {
+                this.controller.get('subtitle')
+                    .update($L('new chalk, where you are right now'));
+                this.controller.get('helptext-chalkback').hide();
+            } else {
+                this.controller.get('subtitle').update($L('chalkback'));
+                this.controller.get('helptext-chalkback').show();
+            }
 
             this.updateRemainingChars();
 
