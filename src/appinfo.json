@@ -1,9 +1,9 @@
 {
   "id":"com.decafbad.blockchalk",
-  "version":"1.0.1",
+  "version":"1.0.2",
   "title":"BlockChalk",
-  "vendor":"0xDECAFBAD",
-  "vendorurl":"http://decafbad.com/",
+  "vendor":"WorkingModel LLC",
+  "vendorurl":"http://workingmodelinc.com/",
   "main":"index.html",
   "icon":"icon.png",
   "miniicon":"miniicon.png",

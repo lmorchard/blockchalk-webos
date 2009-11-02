@@ -26,11 +26,11 @@ _APP_PublisherName = Mojo.appInfo.vendor;
 _APP_Copyright = '&copy; Copyright 2009 l.m.orchard.';
 
 // At least one of these three is required
-_APP_Support_URL = 'forums.precentral.net/homebrew-apps/201737-blockchalk-location-based-anonymous-notes.html';   // label = Support Website
-_APP_Support_Email = 'l.m.orchard@pobox.com';        // label = Send Email
+_APP_Support_URL = 'blog.blockchalk.com';   // label = Support Website
+_APP_Support_Email = 'blockchalk+palmwebos@gmail.com';        // label = Send Email
 
 // Optional
-_APP_Publisher_URL = 'decafbad.com'; // label = _APP_PublisherName + Website
+_APP_Publisher_URL = 'workingmodelinc.com'; // label = _APP_PublisherName + Website
 
 _APP_Help_Resource = [
 { type : 'scene', label: 'Instructions / About', sceneName: 'instructions' },
