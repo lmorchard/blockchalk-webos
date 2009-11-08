@@ -16,7 +16,7 @@ InstructionsAssistant.prototype = (function () { /** @lends InstructionsAssistan
          * Setup the application.
          */
         setup: function () {
-            BlockChalk.setupGlobalMenu(this.controller);
+            BlockChalk.setupGlobalMenu(this.controller, false, true);
 
             this.controller.setupWidget(
                 'close', { label: $L('start chalking!') }, {}

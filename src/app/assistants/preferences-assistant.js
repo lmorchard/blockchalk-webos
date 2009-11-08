@@ -17,12 +17,7 @@ PreferencesAssistant.prototype = (function () { /** @lends PreferencesAssistant#
          */
         setup: function () {
 
-            // We don't need no stinking menu here
-            this.controller.setupWidget(
-                Mojo.Menu.appMenu, 
-                { omitDefaultItems: true }, 
-                { visible: false, items: [ ] }
-            );
+            BlockChalk.setupGlobalMenu(this.controller, true, false);
 
             this.controller.setupWidget(
                 'profanity_filter',

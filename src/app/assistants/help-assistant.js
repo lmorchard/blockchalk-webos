@@ -16,14 +16,7 @@ HelpAssistant.prototype = (function () { /** @lends HelpAssistant */
     return {
         setup: function () {
 
-            this.controller.setupWidget(
-                Mojo.Menu.appMenu, this.attributes = {
-                    omitDefaultItems: true
-                }, 
-                this.model = {
-                    visible: false
-                }
-            );
+            BlockChalk.setupGlobalMenu(this.controller, false, true);
 
             //this.controller.get( 'appname' ).innerHTML = _APP_Name;
             this.controller.get( 'appdetails' ).innerHTML = 

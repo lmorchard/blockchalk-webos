@@ -20,18 +20,18 @@ var BlockChalk = (function () {
         /**
          * Set up app menu across scenes
          */
-        setupGlobalMenu: function (controller) {
+        setupGlobalMenu: function (controller, disable_prefs, disable_help) {
             controller.setupWidget(
                 Mojo.Menu.appMenu, 
                 { omitDefaultItems: true }, 
                 {
                     visible: true,
                     items: [
-                        // Mojo.Menu.editItem,
-                        //{ label: "Reset user ID", command: 'MenuResetUserID' },
-                        { label: "Preferences...", command: 'MenuPreferences' },
-                        { label: "Help...", command: 'MenuHelp' }
-                        // { label: "Report GPS status", command: 'MenuWhereami' }
+                        Mojo.Menu.editItem,
+                        { label: "Preferences", command: 'MenuPreferences',
+                            disabled: disable_prefs },
+                        { label: "Help", command: 'MenuHelp',
+                            disabled: disable_help }
                     ]
                 }
             );
