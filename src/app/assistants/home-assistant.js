@@ -66,6 +66,15 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             Decafbad.Utils.setupLoadingSpinner(this);
 
+            this.login();
+        },
+
+        /**
+         * Try logging into BlockChalk.`
+         */
+        login: function () {
+            Decafbad.Utils.showLoadingSpinner(this);
+
             var chain = new Decafbad.Chain([
                 BlockChalk.loginToBlockChalk,
                 function (chain) {
@@ -73,10 +82,24 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     chain.next();
                 }
             ], this, function (e) {
-                Decafbad.Utils.showSimpleBanner('Failure in startup');
-                Mojo.Log.error("ERROR ERROR ERROR %j", $A(arguments));        
-            }).next();
-
+                Decafbad.Utils.hideLoadingSpinner(this);
+                this.controller.showAlertDialog({
+                    title: $L("Login failed"),
+                    message: $L(
+                        "Unable to contact BlockChalk server.  Check your network " +
+                        "connection and retry, or cancel to try later."
+                    ),
+                    choices: [
+                        {label:$L("Retry"),  value:"retry", type:"dismiss"},
+                        {label:$L("Cancel"), value:"cancel", type:"negative"}
+                    ],
+                    onChoose: function(value) {
+                        if ('retry' === value) {
+                            return this.login();
+                        }
+                    }.bind(this)
+                });
+            }.bind(this)).next();
         },
 
         /**
@@ -264,18 +287,17 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     Decafbad.Utils.showLoadingSpinner(this);
                     chain.next();
                 },
+                BlockChalk.loginToBlockChalk,
                 BlockChalk.acquireGPSFix,
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
                     Decafbad.Utils.hideLoadingSpinner(this);
-                    chain.next();
                 }
-            ], this, function (e) {
+            ], this, (function (e) {
                 Decafbad.Utils.hideLoadingSpinner(this);
-                Decafbad.Utils.showSimpleBanner('Failure in refresh');
-                Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
-            }).next();
+                Decafbad.Utils.showSimpleBanner('Failed to fetch chalks from server!');
+            }).bind(this)).next();
         },
 
         /**
@@ -291,22 +313,24 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Refresh the displayed chalks, after first getting a new GPS fix
          */
         handleCommandRefresh: function (event) {
+            if (!BlockChalk.user_id) {
+                return this.login();
+            }
             var chain = new Decafbad.Chain([
                 function (chain) {
                     Decafbad.Utils.showLoadingSpinner(this);
                     chain.next();
                 },
+                BlockChalk.loginToBlockChalk,
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
                     Decafbad.Utils.hideLoadingSpinner(this);
-                    chain.next();
                 }
-            ], this, function (e) {
+            ], this, (function (e) {
                 Decafbad.Utils.hideLoadingSpinner(this);
-                Decafbad.Utils.showSimpleBanner('Failure in refresh');
-                Mojo.Log.info("ERROR ERROR ERROR %j", $A(arguments));        
-            }).next();
+                Decafbad.Utils.showSimpleBanner('Failed to fetch chalks from server!');
+            }).bind(this)).next();
         },
 
         /**

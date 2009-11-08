@@ -69,6 +69,9 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
                 'lat': gps_fix.latitude
             },
             onSuccess: function (data, resp) {
+                if (!data || !data.length) {
+                    return on_failure();
+                }
                 on_success(data.map(this._fixupChalk, this), resp);
             }.bind(this),
             onFailure: on_failure

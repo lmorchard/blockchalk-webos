@@ -108,22 +108,41 @@ var BlockChalk = (function () {
          */
         acquireGPSFix: function (chain) {
             Decafbad.Utils.showSimpleBanner('Finding your block...');
+
+            // Set up a periodic banner while GPS fix still in progress...
+            var gps_timer = setInterval(function () {
+                var msgs = [
+                        "Still looking for your block...",
+                        "Waiting for GPS fix...",
+                        "Any minute now...",
+                        "Bouncing off the satellites...",
+                        "Almost found your block..."
+                    ],
+                    msg = msgs[ Math.floor(msgs.length * Math.random()) ];
+                Decafbad.Utils.showSimpleBanner(msg);
+            }.bind(this), 15000);
+
             this.controller.serviceRequest("palm://com.palm.location", { 
                 method: "getCurrentPosition", 
                 parameters: {
-                    maximumAge: 0,
-                    accuracy: 1,
-                    responseTime: 2,
+                    maximumAge: 60,
+                    accuracy: 2,
+                    responseTime: 1,
                     subscribe: false
                 }, 
                 onSuccess: function (gps_fix) {
-                    Decafbad.Utils.showSimpleBanner('Found your block');
+                    clearInterval(gps_timer); // Cancel the GPS fix banner.
+                    Decafbad.Utils.showSimpleBanner('Found your block!');
                     BlockChalk.gps_fix = gps_fix;
                     BlockChalk.search_location = gps_fix;
                     Mojo.log('GPS fix acquired: %j', gps_fix);
                     chain.next();
                 },
-                onError: chain.errorCallback('getCurrentPosition')
+                onError: function () {
+                    clearInterval(gps_timer); // Cancel the GPS fix banner.
+                    Decafbad.Utils.showSimpleBanner("Couldn't find your block!");
+                    chain.on_error('getCurrentPosition');
+                }
             }); 
         },
 
@@ -132,7 +151,6 @@ var BlockChalk = (function () {
          * previously cached in a cookie.
          */
         loginToBlockChalk: function (chain) {
-            Mojo.log("loginToBlockChalk");
             var cookie  = new Mojo.Model.Cookie('blockchalk_user_id'),
                 user_id = cookie.get();
 
@@ -146,11 +164,25 @@ var BlockChalk = (function () {
             } else {
                 // Otherwise, request a new user ID from the server
                 Decafbad.Utils.showSimpleBanner('Logging into BlockChalk...');
+
+                // Set up a timeout to fire in error if login doesn't happen in
+                // a timely manner.
+                var error_timeout = (function () {
+                    Decafbad.Utils.showSimpleBanner('Login timed out!');
+                    chain.on_error('login_timeout');
+                }).bind(this).delay(10);
+
                 BlockChalk.service.getNewUserID(
                     function (user_id, resp) {
                         Mojo.log("USER ID (fresh) = %s", user_id);
                         cookie.put(BlockChalk.user_id = user_id);
-                        chain.next();
+                        clearTimeout(error_timeout);
+                        if (!(user_id && /^[0-9A-Za-z]+$/.test(user_id))) {
+                            chain.on_error('getNewUserID');
+                        } else {
+                            Decafbad.Utils.showSimpleBanner('Logged in.');
+                            chain.next();
+                        }
                     },
                     chain.errorCallback('getNewUserID')
                 );
