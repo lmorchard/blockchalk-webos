@@ -176,10 +176,14 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             if (BlockChalk.gps_fix === BlockChalk.search_location) {
                 var neighborhood = this.determineNeighborhoodFromChalks();
-                this.controller.get('subtitle').update(
-                    'Looks like you\'re in<br />' +
-                    '<span class="neighborhood">' + neighborhood + '</span>'
-                );
+                if (neighborhood) {
+                    this.controller.get('subtitle').update(
+                        'Looks like you\'re in<br />' +
+                        '<span class="neighborhood">' + neighborhood + '</span>'
+                    );
+                } else {
+                    this.controller.get('subtitle').update('Chalks nearby');
+                }
             } else {
                 this.controller.get('subtitle').update(
                     'Chalks nearby<br />' +
@@ -204,6 +208,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             this.chalklist_model.items.forEach(function (chalk, idx) {
                 var curr = chalk.neighborhood;
+                if (!neighborhood && curr) {
+                    neighborhood = curr;
+                }
                 if (!counts[curr]) {
                     // First appearance of this neighborhood.
                     top = { n: curr, c: 0 };

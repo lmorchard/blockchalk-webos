@@ -240,6 +240,8 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      */
     apiRequest: function (path, options) {
         var url = this.options.base_url + path;
+
+        Mojo.log("API URL: %s?%s", url, $H(options.parameters).toQueryString());
         
         options.evalJSON = 'force';
         options.parameters = options.parameters || {};
