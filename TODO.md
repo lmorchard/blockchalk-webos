@@ -8,7 +8,6 @@
     * "Tweet This" on chalks / chalkbacks
     * Refresh becomes refresh current location
     * Help screen updates
-    * Increased GPS accuracy
 
 # 2.0.0
 
