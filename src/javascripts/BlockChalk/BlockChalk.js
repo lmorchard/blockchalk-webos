@@ -125,9 +125,9 @@ var BlockChalk = (function () {
             this.controller.serviceRequest("palm://com.palm.location", { 
                 method: "getCurrentPosition", 
                 parameters: {
-                    maximumAge: 60,
-                    accuracy: 2,
-                    responseTime: 1,
+                    maximumAge: 30,
+                    accuracy: 1,
+                    responseTime: 2,
                     subscribe: false
                 }, 
                 onSuccess: function (gps_fix) {
