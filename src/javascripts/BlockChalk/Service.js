@@ -187,6 +187,40 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     },
 
     /**
+     * Get the user's current home location.
+     */
+    getHomeLocation: function (user_id, on_success, on_failure) {
+        return this.apiRequest('/user/'+user_id+'/home', {
+            method: 'get',
+            onSuccess: on_success,
+            onFailure: on_failure
+        });
+    },
+
+    /**
+     * Set the user's current home location.
+     *
+     * @param {string}   user_id           User ID for chalk
+     * @param {object}   gps_fix           GPS location fix
+     * @param {string}   gps_fix.longitude Location longitude
+     * @param {string}   gps_fix.latitude  Location latitude
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    setHomeLocation: function (user_id, gps_fix, on_success, on_failure) {
+        return this.apiRequest('/home', {
+            method: 'post',
+            parameters: {
+                'long':    gps_fix.longitude,
+                'lat':     gps_fix.latitude,
+                'user':    user_id
+            },
+            onSuccess: on_success,
+            onFailure: on_failure
+        });
+    },
+
+    /**
      * Perform some post-response fixing on chalk records.
      */
     _fixupChalk: function (chalk) {

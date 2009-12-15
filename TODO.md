@@ -1,7 +1,6 @@
 # 1.5.0
 
 * Major
-    * Home neighborhood
     * Replies and chalkbacks in inbox
     * Notifications
 * Minor

@@ -89,6 +89,9 @@ p.helptext {
 .home-scene .palm-menu-icon.here {
     background-image: url(../images/menu-icon-here.png);
 }
+.home-scene .palm-menu-icon.home {
+    background-image: url(../images/menu-icon-home.png);
+}
 .home-scene #reply-count {
     position: absolute;
     text-align: center;
