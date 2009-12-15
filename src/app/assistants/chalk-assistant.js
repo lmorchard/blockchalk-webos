@@ -26,9 +26,8 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
 
             this.controller.get('meta').update([
                 BlockChalk.formatDate(this.chalk.datetime),
-                ", ",
                 this.chalk.distance
-            ].join('').escapeHTML());
+            ].join(' ').escapeHTML());
 
             if (BlockChalk.gps_fix !== BlockChalk.search_location) {
                 // User browsing another location, disallow chalkbacks.
