@@ -54,6 +54,39 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.model
             );
 
+            this.controller.get('chalkbacks').hide();
+            this.controller.setupWidget(
+                'replies-mode',
+                { choices: [
+                        { label: $L('Private Replies'), value: 'replies' },
+                        { label: $L('Chalkbacks'), value: 'chalkbacks' }
+                    ] },
+                { value: 'replies' }
+            );
+
+            this.command_menu_model = {items: [
+                {items: [ 
+                ]},
+                {
+                    toggleCmd: 'Replies', 
+                    items: [ 
+                        { command:'Here', label: $L('Here'), 
+                            icon: 'here' },
+                        { command:'Home', label: $L('Home'),
+                            icon: 'home', shortcut: 'H' },
+                        { command:'Search', label: $L('Search'), 
+                            icon: 'search', shortcut: 'S' },
+                        { command:'Replies', label: $L('Replies'), 
+                            icon: 'conversation', shortcut: 'R' }
+                    ]
+                },
+                {items: [ 
+                ]}
+            ]};
+            this.controller.setupWidget(
+                Mojo.Menu.commandMenu, {}, this.command_menu_model
+            );
+
             this.refreshReplies();
         },
 
@@ -96,6 +129,7 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
         activate: function (ev) {
 
             Decafbad.Utils.setupListeners([
+                ['replies-mode', Mojo.Event.propertyChange, this.handleModeChange],
                 ['replylist', Mojo.Event.listTap, this.handleReplyTap],
                 ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
             ], this);
@@ -128,6 +162,14 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         handleCommand: function (event) {
             if (event.type === Mojo.Event.command) {
+
+                // Check for commands meant for home scene.
+                if (['Here', 'Home', 'Search'].indexOf(event.command) !== -1) {
+                    return this.controller.stageController.popScenesTo(
+                        'home', { command: event.command }
+                    );
+                }
+
                 if ('MenuClearLastRead' === event.command) {
                     var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
                     cookie.put(null);
@@ -135,7 +177,24 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                         'Cleared replies last read cookie.'
                     );
                 }
+
             }
+        },
+
+        /**
+         * Handle taps on the replies mode radio button.
+         */
+        handleModeChange: function (ev) {
+            Mojo.log(ev.value);
+
+            if ('replies' === ev.value) {
+                this.controller.get('replies').show();
+                this.controller.get('chalkbacks').hide();
+            } else {
+                this.controller.get('replies').hide();
+                this.controller.get('chalkbacks').show();
+            }
+            
         },
 
         /**

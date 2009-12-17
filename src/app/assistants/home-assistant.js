@@ -15,6 +15,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
     return {
 
+        view_mode: 'Here',
+
         scrim: null,
 
         /**
@@ -22,7 +24,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
-            // BlockChalk.setupGPSTracking(this);
+            BlockChalk.setupGPSTracking(this);
 
             this.controller.setupWidget(
                 Mojo.Menu.appMenu,
@@ -32,7 +34,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     items: [
                         Mojo.Menu.editItem,
                         { label: "Preferences", command: 'MenuPreferences' },
-                        { label: "Make this location home", command: 'MenuMakeHome' },
+                        //{ label: "Make this location home", command: 'MenuMakeHome' },
                         { label: "Help", command: 'MenuHelp' }
                     ]
                 }
@@ -55,33 +57,59 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.chalklist_model
             );
 
-            var command_menu_model = {items: [
+            this.controller.setupWidget(
+                'sethome-button',
+                {
+                    label: $L('Set as Home Neighborhood')
+                },
+                {}
+            );
+
+            this.command_menu_model = {items: [
                 {items: [ 
                     { command:'NewChalk', label: $L('+ New ...'), 
                         icon: 'new', shortcut: 'N' }
                 ]},
-                {items: [ 
-                    { command:'Here', label: $L('Here'), 
-                        icon: 'here' },
-                    { command:'Home', label: $L('Home'),
-                        icon: 'home', shortcut: 'H' },
-                    { command:'Replies', label: $L('Replies'), 
-                        icon: 'conversation', shortcut: 'R' },
-                    { command:'Search', label: $L('Search'), 
-                        icon: 'search', shortcut: 'S' }
-                ]},
+                {
+                    toggleCmd: 'Here', 
+                    items: [ 
+                        { command:'Here', label: $L('Here'), 
+                            icon: 'here' },
+                        { command:'Home', label: $L('Home'),
+                            icon: 'home', shortcut: 'H' },
+                        { command:'Search', label: $L('Search'), 
+                            icon: 'search', shortcut: 'S' },
+                        { command:'Replies', label: $L('Replies'), 
+                            icon: 'conversation', shortcut: 'R' }
+                    ]
+                },
                 {items: [ 
                     { command:'Refresh', label: $L('Refresh'), 
                         icon: 'refresh' }
                 ]}
             ]};
             this.controller.setupWidget(
-                Mojo.Menu.commandMenu, {}, command_menu_model
+                Mojo.Menu.commandMenu, {}, this.command_menu_model
             );
 
             Decafbad.Utils.setupLoadingSpinner(this);
 
             this.login();
+        },
+
+        /**
+         * Set the view mode for scene, highlighting appropriate tab and
+         * locator type.
+         */
+        setViewMode: function (mode) {
+            if (!mode) { 
+                mode = this.view_mode; 
+            } else {
+                this.view_mode = mode;
+            }
+            this.controller.get('locator').className = mode.toLowerCase();
+            this.command_menu_model.items[1].toggleCmd = mode;
+            this.controller.modelChanged(this.command_menu_model);
         },
 
         /**
@@ -124,17 +152,31 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             Decafbad.Utils.setupListeners([
                 ['chalklist', Mojo.Event.listTap, this.handleChalkTap],
-                ['chalklist', Mojo.Event.listDelete, this.handleBuryChalk]
+                ['chalklist', Mojo.Event.listDelete, this.handleBuryChalk],
+                ['sethome-button', Mojo.Event.tap, this.handleCommandMenuMakeHome]
             ], this);
 
-            // Handle refresh cues coming back from other scenes.
+            // Handle cues coming back from other scenes.
             if (typeof ev !== 'undefined') {
+
+                if ('undefined' !== typeof ev.command) {
+                    // Accept commands from popped scenes.
+                    var func = this['handleCommand'+ev.command];
+                    if (typeof func !== 'undefined') {
+                        return func.apply(this, [event]);
+                    }
+                }
+                
                 if (typeof ev.refresh !== 'undefined') {
+                    // Accept a refresh signal from popped scene.
                     this.handleCommandRefresh();
                 }
+
                 if (typeof ev.search_location !== 'undefined') {
+                    // Accept a change in search location from popped scene.
                     this.useSearchLocation(ev.search_location, ev.search_text);
                 }
+
             }
 
             this.checkReplies();
@@ -189,37 +231,20 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             chalk_list.mojo.noticeUpdatedItems(0, this.chalklist_model.items);
             chalk_list.mojo.setLength(this.chalklist_model.items.length);
 
-            /* TODO: Templatize this somehow.  This is an UGLY HACK: */
-            if (BlockChalk.gps_fix === BlockChalk.search_location) {
-                var neighborhood = this.determineNeighborhoodFromChalks();
-                if (!neighborhood) {
-                    this.controller.get('subtitle').update('Chalks nearby');
-                } else {
-                    this.controller.get('subtitle').update(
-                        'Looks like you\'re in<br />' +
-                        '<span class="neighborhood">' + neighborhood + '</span>'
-                    );
-                }
-            } else if (BlockChalk.home_location === BlockChalk.search_location) {
-                // TODO: Need a home icon next to the neighborhood title.
-                var neighborhood = this.determineNeighborhoodFromChalks();
-                if (!neighborhood) {
-                    this.controller.get('subtitle').update('Chalks near home');
-                } else {
-                    this.controller.get('subtitle').update(
-                        'Looks like you\'re home in<br />' +
-                        '<span class="neighborhood">' + neighborhood + '</span>'
-                    );
-                }
+            var neighborhood = this.determineNeighborhoodFromChalks();
+
+            if ('undefined' !== typeof BlockChalk.home_location && 
+                    neighborhood === BlockChalk.home_location.neighborhood) {
+                this.controller.get('sethome-button').hide();
             } else {
-                this.controller.get('subtitle').update(
-                    'Chalks nearby<br />' +
-                    '"' + BlockChalk.search_text + '" <br />' +
-                    '('+
-                    BlockChalk.search_location.latitude + ', ' +
-                    BlockChalk.search_location.longitude + ')'
-                );
+                this.controller.get('sethome-button').show();
             }
+
+            this.controller.get('location').innerText = neighborhood;
+
+            this.controller.get('coordinates').innerText =
+                BlockChalk.search_location.latitude + ', ' +
+                BlockChalk.search_location.longitude;
             
             chain.next();
         },
@@ -295,16 +320,17 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Set the current location as home.
          */
         handleCommandMenuMakeHome: function (event) {
+            BlockChalk.home_location = BlockChalk.gps_fix;
             BlockChalk.service.setHomeLocation(
                 BlockChalk.user_id,
                 BlockChalk.search_location,
                 function () {
-                    BlockChalk.home_location = BlockChalk.search_location;
+                    this.handleCommandHome();
                     Decafbad.Utils.showSimpleBanner('Home location set.');
-                },
+                }.bind(this),
                 function () {
                     Decafbad.Utils.showSimpleBanner('Home location failed.');
-                }
+                }.bind(this)
             );
         },
 
@@ -330,30 +356,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Switch search location to saved home, refresh chalks.
-         */
-        handleCommandHome: function (event) {
-            var chain = new Decafbad.Chain([
-                BlockChalk.loginToBlockChalk,
-                'getCurrentHomeLocation',
-                function (chain) {
-                    if (BlockChalk.home_location) {
-                        BlockChalk.search_location = BlockChalk.home_location;
-                        chain.next();
-                    }
-                },
-                'getSearchLocationRecentChalks',
-                'updateChalkList',
-                function (chain) {
-                    Decafbad.Utils.hideLoadingSpinner(this);
-                }
-            ], this, (function (e) {
-                Decafbad.Utils.hideLoadingSpinner(this);
-                Decafbad.Utils.showSimpleBanner('Failed to fetch home from server!');
-            }).bind(this)).next();
-        },
-        
-        /**
          * Refresh the displayed chalks, after first getting a new GPS fix
          */
         handleCommandHere: function (event) {
@@ -364,10 +366,10 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 },
                 BlockChalk.loginToBlockChalk,
                 BlockChalk.acquireGPSFix,
-                //'getCurrentHomeLocation',
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
+                    this.setViewMode('Here');
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
             ], this, (function (e) {
@@ -377,26 +379,57 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Get the current home location, prompting user to pick one if
-         * necessary.
+         * Switch search location to saved home, refresh chalks.
          */
-        getCurrentHomeLocation: function (chain) {
-            if ('undefined' !== typeof BlockChalk.home_location) {
-                chain.next();
-            } else {
-                BlockChalk.service.getHomeLocation(
-                    BlockChalk.user_id,
-                    function (data) {
-                        if (data) {
+        handleCommandHome: function (event) {
+            var chain = new Decafbad.Chain([
+                function (chain) {
+                    Decafbad.Utils.showLoadingSpinner(this);
+                    chain.next();
+                },
+                BlockChalk.loginToBlockChalk,
+                function (chain) {
+                    // Fetch the current home location
+                    BlockChalk.service.getHomeLocation(
+                        BlockChalk.user_id,
+                        function (data) {
                             BlockChalk.home_location = data;
                             chain.next();
-                        } else {
-                            this.askForHomeLocation(chain);
-                        }
-                    }.bind(this),
-                    chain.errorCallback()
-                );
-            }
+                        }.bind(this),
+                        chain.errorCallback()
+                    );
+                },
+                function (chain) {
+                    if (null !== BlockChalk.home_location) {
+                        // We got a location, so proceed with it as search
+                        // location.
+                        BlockChalk.search_location = BlockChalk.home_location;
+                        chain.next();
+                    } else {
+                        // Warn the user that there's no location.
+                        this.controller.showAlertDialog({
+                            title: $L("No home location"),
+                            message: $L("You haven't set a home location yet."),
+                            choices: [
+                                {label:$L("OK"), value:"skip", type:"dismiss"}
+                            ],
+                            onChoose: function(value) {
+                            }.bind(this)
+                        });
+                        // Location failed, so abort and reset the view mode.
+                        this.setViewMode();
+                    }
+                },
+                'getSearchLocationRecentChalks',
+                'updateChalkList',
+                function (chain) {
+                    this.setViewMode('Home');
+                    Decafbad.Utils.hideLoadingSpinner(this);
+                }
+            ], this, (function (e) {
+                Decafbad.Utils.hideLoadingSpinner(this);
+                Decafbad.Utils.showSimpleBanner('Failed to fetch home from server!');
+            }).bind(this)).next();
         },
 
         /**
@@ -418,7 +451,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     if ('home' === value) {
                         this.handleCommandMenuMakeHome();
                     }
-                    chain.next();
                 }.bind(this)
             });
         },
@@ -429,13 +461,13 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         useSearchLocation: function (search_location, search_text) {
             BlockChalk.search_location = search_location;
             BlockChalk.search_text = search_text;
-            this.handleCommandRefresh();
+            this.handleCommandRefresh(null, "Search");
         },
 
         /**
          * Refresh the displayed chalks, after first getting a new GPS fix
          */
-        handleCommandRefresh: function (event) {
+        handleCommandRefresh: function (event, mode_after) {
             if (!BlockChalk.user_id) {
                 return this.login();
             }
@@ -448,6 +480,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
+                    if (mode_after) {
+                        this.setViewMode(mode_after);
+                    }
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
             ], this, (function (e) {

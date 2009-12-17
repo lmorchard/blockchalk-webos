@@ -19,7 +19,7 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
             // Use a cookie to try to track the first run after installation.
             var first_run_cookie = new Mojo.Model.Cookie('blockchalk_first_run'),
                 first_run_complete = first_run_cookie.get();
-            if (!first_run_complete) {
+            if (false && !first_run_complete) {
                 // Display help on first run, as an introduction.
                 this.controller.pushScene('instructions');
             }

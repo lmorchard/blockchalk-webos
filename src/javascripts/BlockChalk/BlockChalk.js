@@ -112,11 +112,11 @@ var BlockChalk = (function () {
             // Set up a periodic banner while GPS fix still in progress...
             var gps_timer = setInterval(function () {
                 var msgs = [
-                        "Still looking for your block...",
-                        "Waiting for GPS fix...",
-                        "Any minute now...",
-                        "Bouncing off the satellites...",
-                        "Almost found your block..."
+                        $L("Still looking for your block..."),
+                        $L("Waiting for GPS fix..."),
+                        $L("Any second now..."),
+                        $L("Bouncing off the satellites..."),
+                        $L("Almost found your block...")
                     ],
                     msg = msgs[ Math.floor(msgs.length * Math.random()) ];
                 Decafbad.Utils.showSimpleBanner(msg);
@@ -127,7 +127,7 @@ var BlockChalk = (function () {
                 parameters: {
                     maximumAge: 30,
                     accuracy: 1,
-                    responseTime: 2,
+                    responseTime: 1,
                     subscribe: false
                 }, 
                 onSuccess: function (gps_fix) {
@@ -204,7 +204,6 @@ var BlockChalk = (function () {
                     }, 
                     onSuccess: function (gps_fix) {
                         BlockChalk.gps_fix = gps_fix;
-                        BlockChalk.search_location = gps_fix;
                     },
                     onError: function (resp) {
                     }

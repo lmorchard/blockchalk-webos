@@ -9,6 +9,29 @@ p {
 p.helptext {
     font-size: 0.75em;
 }
+
+.palm-menu-icon.here {
+    background-image: url(../images/menu-icon-here.png);
+}
+.palm-menu-icon.home {
+    background-image: url(../images/menu-icon-home.png);
+}
+.home-scene #reply-count {
+    position: absolute;
+    text-align: center;
+    top: 6px;
+    left: -1px;
+    width: 36px;
+    height: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    margin: 0px;
+    padding: 0px;
+    color: #fff;
+    background-image: url(../images/red-circle.png);
+}
+
 .palm-dark .palm-page-header.multi-line {
     -webkit-border-image: none;
     padding: 0px 0px 0px 0px;
@@ -16,23 +39,37 @@ p.helptext {
 .palm-dark .palm-page-header-wrapper {
     margin: 0px 0px 0px 0px;
 }
-.palm-dark .palm-page-header .title {
+.palm-dark .palm-page-header.multi-line .title {
     background: #000;
-    padding: 0px 0px 0px 12px;
-    border-bottom: #fff;
+    padding: 10px 0px 0px 0px;
+    margin: 0 0 14px 0;
+    height: 18px;
+    background-color: transparent;
+    background-image: url(../images/BlockChalkTitle.png);
+    background-repeat: no-repeat;
+    background-position: bottom center;
 }
 .palm-dark .palm-page-header.multi-line .subtitle {
+    text-align: center;
     color: #fff;
-    font-size: 19px;
+    font-size: 16px;
     font-weight: normal;
     background: #000;
-    margin: -4px 0px 4px 0px;
-    padding: 0px 0px 6px 14px;
-    border-bottom: 2px solid #fff;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
 }
 .palm-dark .palm-page-header.multi-line .subtitle .neighborhood {
-    font-size: 22px;
+    font-size: 19px;
     font-weight: bold;
+}
+.palm-dark #chalklist-title {
+    text-align: left;
+    color: #fff;
+    border-bottom: 2px solid #fff;
+    font-size: 19px;
+    font-weight: bold;
+    margin: 14px 0px 0px 0px;
+    padding: 0px 0px 6px 14px;
 }
 .palm-dark .command-menu .palm-menu-fade {
     opacity: 0.3;
@@ -52,6 +89,36 @@ p.helptext {
     font-style: italic;
     font-size: 14px;
 }
+.home-scene #locator {
+}
+.home-scene #locator #location {
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.home-scene #locator .lookslike { display: none; }
+.home-scene #locator .browsingat { display: none; }
+.home-scene #locator #sethome { display: none; }
+.home-scene #locator #coordinates { display: none; }
+.home-scene #locator #coordinates:before { content: "("; }
+.home-scene #locator #coordinates:after { content: ")"; }
+.home-scene #locator #sethome-button { display: none; }
+
+.home-scene #locator.here .lookslike { display: block; }
+.home-scene #locator.here #sethome-button { display: block; }
+
+.home-scene #locator.home #location {
+    padding-left: 24px;
+    background: transparent url(../images/home-glyph.png) no-repeat 2px left;
+}
+
+.home-scene #locator.search #coordinates { display: block; }
+/*
+.home-scene #locator.search #location:before { content: "\""; }
+.home-scene #locator.search #location:after { content: "\""; }
+*/
+.home-scene #locator.search .browsingat { display: block; }
+
 .home-scene #chalklist {
     margin-top: 5px;
 }
@@ -86,27 +153,6 @@ p.helptext {
     display: inline;
     background: transparent url(../images/chalkback.png) no-repeat 0 0;
 }
-.home-scene .palm-menu-icon.here {
-    background-image: url(../images/menu-icon-here.png);
-}
-.home-scene .palm-menu-icon.home {
-    background-image: url(../images/menu-icon-home.png);
-}
-.home-scene #reply-count {
-    position: absolute;
-    text-align: center;
-    top: 6px;
-    left: -1px;
-    width: 36px;
-    height: 20px;
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 20px;
-    margin: 0px;
-    padding: 0px;
-    color: #fff;
-    background-image: url(../images/red-circle.png);
-}
 .compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;
@@ -114,6 +160,18 @@ p.helptext {
 .compose-scene #character-count.over span {
     font-weight: bold;
     color: #f44;
+}
+.replies-scene #replies-mode .palm-radiobutton {
+    background-color: #000;
+}
+.replies-scene #replies .title, .replies-scene #chalkbacks .title {
+    text-align: left;
+    color: #fff;
+    border-bottom: 2px solid #fff;
+    font-size: 19px;
+    font-weight: bold;
+    margin: 14px 0px 0px 0px;
+    padding: 0px 0px 6px 14px;
 }
 .replies-scene #replylist .empty {
     padding: 6px 0 10px 14px;
