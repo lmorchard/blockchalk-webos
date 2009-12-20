@@ -29,7 +29,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.chalk.distance
             ].join(' ').escapeHTML());
 
-            if (BlockChalk.gps_fix !== BlockChalk.search_location) {
+            if (['here','home'].indexOf(BlockChalk.location_mode) === -1) {
                 // User browsing another location, disallow chalkbacks.
                 this.controller.get('chalkback-wrapper').remove();
                 this.controller.get('reply-wrapper').width = "100%";
@@ -38,7 +38,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.controller.setupWidget(
                     'chalk-chalkback-button', { label: $L('Chalkback') }, {}
                 );
-            }
+             }
 
             // Hide the location button, or set it up if a place is present.
             if (!this.chalk.place) {
@@ -54,6 +54,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             if (!this.chalk.chalkbackTo) {
                 this.controller.get('chalk-view-chalkback-button').remove();
             } else {
+                $$('.chalk-scene')[0].addClassName('chalkback');
                 this.controller.setupWidget(
                     'chalk-view-chalkback-button', 
                     { label: $L('See original chalk') }, {}
@@ -67,7 +68,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 'chalk-bury-button', { label: $L('Bury') }, {}
             );
             this.controller.setupWidget(
-                'chalk-share-button', { label: $L('Share') }, {}
+                'chalk-tweet-button', { label: $L('Tweet this') }, {}
             );
 
         },
@@ -78,10 +79,10 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
         activate: function (event) {
             var listeners = [
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
-                ['chalk-bury-button', Mojo.Event.tap, this.handleBury]
-                //['chalk-share-button', Mojo.Event.tap, this.handleShare]
+                ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
+                ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet]
             ];
-            if (BlockChalk.gps_fix === BlockChalk.search_location) {
+            if (['here','home'].indexOf(BlockChalk.location_mode) !== -1) {
                 // Wire up the chalkback button if allowed.
                 listeners.push([
                     'chalk-chalkback-button', 
@@ -195,14 +196,25 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
         },
 
         /**
-         * Handle tap on the share button
+         * Handle tap on the tweet button
          */
-        handleShare: function (ev) {
-
+        handleTweet: function (ev) {
+            var url = "http://mobile.twitter.com/home?status=" +
+                encodeURIComponent(
+                    'Check out this chalk on my block ' +
+                    'http://blockchalk.com/'+this.chalk.id+'#chalk'
+                );
+            Mojo.log("Tweet this URL: %s", url);
+            this.controller.serviceRequest("palm://com.palm.applicationManager", {
+                method: "open",
+                parameters:  {
+                    id: 'com.palm.app.browser',
+                    params: { target: url }
+                }
+            });
         },
 
         EOF: null
     };
 
 }());
-

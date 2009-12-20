@@ -119,27 +119,39 @@ SearchAssistant.prototype = (function () { /** @lends SearchAssistant# */
 
                 onSuccess: function (resp) {
                     Decafbad.Utils.hideLoadingSpinner(this);
+                    var data = resp.responseJSON;
+                    if (data.Status && 200 === data.Status.code) {
+                        // Success! So use the result as a search location.
+                        var coords = data.Placemark[0].Point.coordinates;
+                        this.controller.stageController.popScenesTo('home', { 
+                            search_text: this.model.location,
+                            search_location: {
+                                latitude:  coords[1],
+                                longitude: coords[0]
+                            }
+                        });
+                    } else {
+                        // Failure. Bail.
+                        return this.handleFailure(resp); 
+                    }
 
-                    var data   = resp.responseJSON,
-                        coords = data.Placemark[0].Point.coordinates;
-                    this.controller.stageController.popScene({ 
-                        search_text: this.model.location,
-                        search_location: {
-                            latitude:  coords[1],
-                            longitude: coords[0]
-                        }
-                    });
                 }.bind(this),
                 
-                onFailure: function (resp) {
-                    Decafbad.Utils.hideLoadingSpinner(this);
-                    this.model.submit_disabled = false;
-                    this.controller.modelChanged(this.model);
-                    Decafbad.Utils.showSimpleBanner('Location lookup failed');
-                }.bind(this)
+                onFailure: this.handleFailure.bind(this)
 
             });
 
+        },
+
+        /**
+         * The geocode search was a failure, so alert the user.
+         */
+        handleFailure: function (resp) {
+            Decafbad.Utils.hideLoadingSpinner(this);
+            this.model.submit_disabled = false;
+            this.controller.modelChanged(this.model);
+            this.controller.get('location').mojo.focus();
+            Decafbad.Utils.showSimpleBanner('Location lookup failed, try again?');
         },
 
         EOF: null

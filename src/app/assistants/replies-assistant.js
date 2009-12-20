@@ -24,6 +24,7 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
             // Set the last replies read datestamp cookie
             var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
             cookie.put( (new Date()).getTime() );
+            BlockChalk.replies_count = 0;
 
             this.controller.setupWidget(
                 Mojo.Menu.appMenu, 
@@ -36,7 +37,10 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
             );
             
-            this.model = { replies: [ ] };
+            this.model = { 
+                replies: [ ],
+                chalkbacks: [ ]
+            };
 
             this.controller.setupWidget(
                 'replylist',
@@ -47,6 +51,22 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     listTemplate:  'replies/replylist-container',
                     emptyTemplate: 'replies/replylist-empty',
                     itemsProperty: 'replies',
+                    formatters: {
+                        datetime: BlockChalk.formatDate
+                    }
+                },
+                this.model
+            );
+
+            this.controller.setupWidget(
+                'chalkback-list',
+                {
+                    reorderable:   false,
+                    swipeToDelete: false, // true,
+                    itemTemplate:  'replies/replylist-item',
+                    listTemplate:  'replies/replylist-container',
+                    emptyTemplate: 'replies/replylist-empty',
+                    itemsProperty: 'chalkbacks',
                     formatters: {
                         datetime: BlockChalk.formatDate
                     }
@@ -87,7 +107,6 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 Mojo.Menu.commandMenu, {}, this.command_menu_model
             );
 
-            this.refreshReplies();
         },
 
         /**
@@ -124,22 +143,52 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
+         * Refresh the display of chalkbacks
+         */
+        refreshChalkbacks: function() {
+            Decafbad.Utils.setupLoadingSpinner(this);
+
+            BlockChalk.service.getRecentChalkbacks(
+                BlockChalk.user_id,
+                function (chalkbacks) {
+
+                    this.model.chalkbacks = chalkbacks.map(function (chalkback) {
+                        chalkback.time = chalkback.datetime.toLocaleTimeString();
+                        chalkback.date = chalkback.datetime.toLocaleDateString();
+                        return chalkback;
+                    }, this).sort(function (ra, rb) {
+                        var a = ra.datetime.getTime(),
+                            b = rb.datetime.getTime();
+                        return (b - a);
+                    });
+
+                    var chalkback_list = this.controller.get('chalkback-list');
+                    chalkback_list.mojo.noticeUpdatedItems(0, this.model.chalkbacks);
+                    chalkback_list.mojo.setLength(this.model.chalkbacks.length);
+
+                }.bind(this),
+
+                function () {
+                    Decafbad.Utils.showSimpleBanner('Chalkbacks get failed.');
+                }
+            );
+
+        },
+
+        /**
          * React to card activation.
          */
         activate: function (ev) {
 
             Decafbad.Utils.setupListeners([
                 ['replies-mode', Mojo.Event.propertyChange, this.handleModeChange],
+                ['chalkback-list', Mojo.Event.listTap, this.handleChalkTap],
                 ['replylist', Mojo.Event.listTap, this.handleReplyTap],
                 ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
             ], this);
 
-            // Handle refresh cues coming back from other scenes.
-            if (typeof ev !== 'undefined') {
-                if (typeof ev.refresh !== 'undefined') {
-                    this.refreshReplies();
-                }
-            }
+            this.refreshReplies();
+            this.refreshChalkbacks();
 
         },
 
@@ -185,8 +234,6 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Handle taps on the replies mode radio button.
          */
         handleModeChange: function (ev) {
-            Mojo.log(ev.value);
-
             if ('replies' === ev.value) {
                 this.controller.get('replies').show();
                 this.controller.get('chalkbacks').hide();
@@ -194,13 +241,21 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 this.controller.get('replies').hide();
                 this.controller.get('chalkbacks').show();
             }
-            
         },
 
         /**
          * Handle deletion of a reply
          */
         handleBuryReply: function (ev) {
+        },
+
+        /**
+         * Launch chalk context menu
+         */
+        handleChalkTap: function (ev) {
+            return this.controller.stageController.pushScene(
+                'chalk', ev.item
+            );
         },
 
         /**

@@ -11,7 +11,7 @@ function HomeAssistant() {
 HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
     // Only check for new replies every 3 minutes.
-    var REPLIES_CHECK_PERIOD = 1000 * 60 * 3;
+    var REPLIES_CHECK_PERIOD = 1000 * 60 * 1;
 
     return {
 
@@ -26,20 +26,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             BlockChalk.setupGPSTracking(this);
 
-            this.controller.setupWidget(
-                Mojo.Menu.appMenu,
-                { omitDefaultItems: true },
-                {
-                    visible: true,
-                    items: [
-                        Mojo.Menu.editItem,
-                        { label: "Preferences", command: 'MenuPreferences' },
-                        //{ label: "Make this location home", command: 'MenuMakeHome' },
-                        { label: "Help", command: 'MenuHelp' }
-                    ]
-                }
-            );
-            
             this.chalklist_model = { items: [ ] };
 
             this.controller.setupWidget(
@@ -103,13 +89,16 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setViewMode: function (mode) {
             if (!mode) { 
+                // If no mode supplied, just reset the current mode.
                 mode = this.view_mode; 
             } else {
+                // Set the new mode.
                 this.view_mode = mode;
             }
             this.controller.get('locator').className = mode.toLowerCase();
             this.command_menu_model.items[1].toggleCmd = mode;
             this.controller.modelChanged(this.command_menu_model);
+            this.updateRepliesBadge();
         },
 
         /**
@@ -158,7 +147,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             // Handle cues coming back from other scenes.
             if (typeof ev !== 'undefined') {
-
                 if ('undefined' !== typeof ev.command) {
                     // Accept commands from popped scenes.
                     var func = this['handleCommand'+ev.command];
@@ -166,19 +154,18 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                         return func.apply(this, [event]);
                     }
                 }
-                
                 if (typeof ev.refresh !== 'undefined') {
                     // Accept a refresh signal from popped scene.
                     this.handleCommandRefresh();
                 }
-
                 if (typeof ev.search_location !== 'undefined') {
                     // Accept a change in search location from popped scene.
+                    BlockChalk.location_mode = 'search';
                     this.useSearchLocation(ev.search_location, ev.search_text);
                 }
-
             }
 
+            this.setViewMode();
             this.checkReplies();
         },
 
@@ -202,6 +189,13 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         getSearchLocationRecentChalks: function (chain) {
             Decafbad.Utils.showSimpleBanner('Finding recent chalks...');
+            Mojo.log("Location mode = %s", BlockChalk.location_mode);
+
+            if ('here' == BlockChalk.location_mode) {
+                // If using 'here', make sure search location is up to date
+                // with GPS fix.
+                BlockChalk.search_location = BlockChalk.gps_fix;
+            }
 
             BlockChalk.service.getRecentChalks(
                 BlockChalk.search_location, BlockChalk.user_id,
@@ -352,6 +346,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Launch location search card.
          */
         handleCommandReplies: function (event) {
+            this.updateRepliesBadge(0);
             this.controller.stageController.pushScene('replies');
         },
 
@@ -369,6 +364,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
+                    BlockChalk.location_mode = 'here';
                     this.setViewMode('Here');
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
@@ -388,21 +384,12 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     chain.next();
                 },
                 BlockChalk.loginToBlockChalk,
-                function (chain) {
-                    // Fetch the current home location
-                    BlockChalk.service.getHomeLocation(
-                        BlockChalk.user_id,
-                        function (data) {
-                            BlockChalk.home_location = data;
-                            chain.next();
-                        }.bind(this),
-                        chain.errorCallback()
-                    );
-                },
+                'getHomeLocation',
                 function (chain) {
                     if (null !== BlockChalk.home_location) {
                         // We got a location, so proceed with it as search
                         // location.
+                        BlockChalk.location_mode = 'home';
                         BlockChalk.search_location = BlockChalk.home_location;
                         chain.next();
                     } else {
@@ -430,6 +417,20 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 Decafbad.Utils.hideLoadingSpinner(this);
                 Decafbad.Utils.showSimpleBanner('Failed to fetch home from server!');
             }).bind(this)).next();
+        },
+
+        /**
+         * Fetch the current home location
+         */
+        getHomeLocation: function (chain) {
+            BlockChalk.service.getHomeLocation(
+                BlockChalk.user_id,
+                function (data) {
+                    BlockChalk.home_location = data;
+                    chain.next();
+                }.bind(this),
+                chain.errorCallback()
+            );
         },
 
         /**
@@ -483,6 +484,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     if (mode_after) {
                         this.setViewMode(mode_after);
                     }
+                    this.checkReplies();
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
             ], this, (function (e) {
@@ -492,9 +494,15 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Check for replies and update the counter if necessary.
+         * Update the badge display of new replies.
          */
-        checkReplies: function (chain) {
+        updateRepliesBadge: function (count) {
+            if (!count) {
+                // If no count supplied, simply refresh the current
+                count = BlockChalk.replies_count;
+            } else {
+                BlockChalk.replies_count = count;
+            }
 
             // Create the reply counter badge, if not already present.
             if (!this.controller.get('reply-count')) {
@@ -503,58 +511,68 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 );
                 this.controller.get('reply-count').hide();
             }
+            var badge = this.controller.get('reply-count');
 
-            // Try getting the timestamp of last replies read.
-            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
-                replies_read = cookie.get(),
-                badge = this.controller.get('reply-count');
+            // If the count is over zero, show the badge and update it.
+            if (count > 0) {
+                badge.update(count);
+                badge.show();
+            }
+        },
 
+        /**
+         * Check for replies and update the counter if necessary.
+         */
+        checkReplies: function () {
             // Try to ensure that reply checking doesn't happen too frequently
             if (BlockChalk.last_replies_check) {
                 var last   = BlockChalk.last_replies_check,
                     now    = new Date(),
                     period = (now.getTime() - last.getTime());
-
-                if ( period < REPLIES_CHECK_PERIOD ) {
-                    if (replies_read > last.getTime()) {
-                        // Hide the badge if last view of replies happened
-                        // since last check.
-                        badge.hide();
-                    }
-                    return;
-                }
+                if ( period < REPLIES_CHECK_PERIOD ) { return; }
             }
             BlockChalk.last_replies_check = new Date();
 
-            // Fetch replies, look for any new since last fetch
-            BlockChalk.service.getRecentReplies(
-                BlockChalk.user_id,
-                function (replies) {
+            // Try getting the timestamp of last replies read.
+            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
+                replies_read = cookie.get(),
+                all_items = [];
 
-                    if (!replies.length) {
-                        // Just hide the counter if there are none at all.
-                        badge.hide();
-                    } else {
-                        // Count all the replies newer than the timestamp...
-                        var count = 0;
-                        replies.each(function (reply) {
-                            if (!replies_read || reply.datetime.getTime() > replies_read) {
-                                count++;
-                            }
-                        }, this);
-
-                        if (count > 0) {
-                            // Show the batch with the new replies count
-                            badge.update(count);
-                            badge.show();
-                        } else {
-                            // No new replies, so hide the counter.
-                            badge.hide();
+            // Check replies and chalkbacks to assemble count of unseen items.
+            // TODO: This seems kind of ugly.  Find a better way?
+            var chain = new Decafbad.Chain([
+                function (chain) {
+                    // Assemble replies.
+                    BlockChalk.service.getRecentReplies(
+                        BlockChalk.user_id,
+                        function (items) {
+                            if (items) { all_items = all_items.concat(items); }
+                            chain.next();
+                        }.bind(this)
+                    );
+                },
+                function (chain) {
+                    // Assemble chalkbacks.
+                    BlockChalk.service.getRecentChalkbacks(
+                        BlockChalk.user_id,
+                        function (items) {
+                            if (items) { all_items = all_items.concat(items); }
+                            chain.next();
+                        }.bind(this)
+                    );
+                },
+                function () {
+                    // Count new items since last read, update the badge.
+                    var count = 0;
+                    all_items.each(function (reply) {
+                        if (!replies_read || reply.datetime.getTime() > replies_read) {
+                            count++;
                         }
-                        badge = null;
-                    }
-                }.bind(this)
-            );
+                    }, this);
+                    this.updateRepliesBadge(count);
+                }
+            ], this, function (e) {
+            }).next();
 
         },
 

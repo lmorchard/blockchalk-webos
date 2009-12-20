@@ -153,6 +153,15 @@ p.helptext {
     display: inline;
     background: transparent url(../images/chalkback.png) no-repeat 0 0;
 }
+.chalk-scene .subtitle.chalkback {
+    display: none;
+}
+.chalk-scene.chalkback .subtitle.chalk {
+    display: none;
+}
+.chalk-scene.chalkback .subtitle.chalkback {
+    display: block;
+}
 .compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;
@@ -164,7 +173,7 @@ p.helptext {
 .replies-scene #replies-mode .palm-radiobutton {
     background-color: #000;
 }
-.replies-scene #replies .title, .replies-scene #chalkbacks .title {
+.replies-scene #replies .modetitle, .replies-scene #chalkbacks .modetitle {
     text-align: left;
     color: #fff;
     border-bottom: 2px solid #fff;
@@ -173,20 +182,20 @@ p.helptext {
     margin: 14px 0px 0px 0px;
     padding: 0px 0px 6px 14px;
 }
-.replies-scene #replylist .empty {
+.replies-scene .empty {
     padding: 6px 0 10px 14px;
 }
-.replies-scene #replylist .palm-row.first {
+.replies-scene .palm-row.first {
 }
-.replies-scene #replylist .palm-row {
+.replies-scene .palm-row {
     min-height: 0px;
     padding: 6px 0 10px 0;
 }
-.replies-scene #replylist .palm-row .title {
+.replies-scene .palm-row .title {
     padding: 0 14px 0 14px;
     font-size: 18px;
 }
-.replies-scene #replylist .palm-row .subtitle {
+.replies-scene .palm-row .subtitle {
     margin: 4px 14px 0 14px;
     font-style: italic;
     font-size: 14px;

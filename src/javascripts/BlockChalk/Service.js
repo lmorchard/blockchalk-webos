@@ -180,6 +180,25 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/user/'+user_id+'/replies', {
             method: 'get',
             onSuccess: function (data, resp) {
+                if (!data) { return on_success([]); }
+                on_success(data.map(this._fixupChalk, this), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
+
+    /**
+     * Get recent chalkbacks written to a given user
+     *
+     * @param {string}   user_id           User ID for chalk
+     * @param {function} on_success        success callback, passed user id
+     * @param {function} on_failure        failure callback
+     */
+    getRecentChalkbacks: function (user_id, on_success, on_failure) {
+        return this.apiRequest('/user/'+user_id+'/chalkbacks', {
+            method: 'get',
+            onSuccess: function (data, resp) {
+                if (!data) { return on_success([]); }
                 on_success(data.map(this._fixupChalk, this), resp);
             }.bind(this),
             onFailure: on_failure

@@ -10,6 +10,25 @@ var BlockChalk = (function () {
     /** @lends Memento */
     return {
 
+        // Current logged in user ID
+        user_id: null,
+        // Current location mode (here, home, search)
+        location_mode: 'here',
+        // Current GPS fix
+        gps_fix: null,
+        // Current location for chalk search
+        search_location: null,
+        // Last count of replies
+        replies_count: null,
+        // BlockChalk API service
+        service: null,
+        // Cookie containing prefs
+        prefs_cookie: null,
+        // Prefs model object
+        prefs_model: null,
+        // GPS tracking subscription handle
+        tracking_handle: null,
+
         /**
          * Package initialization.
          */
@@ -137,13 +156,61 @@ var BlockChalk = (function () {
                     BlockChalk.search_location = gps_fix;
                     Mojo.log('GPS fix acquired: %j', gps_fix);
                     chain.next();
-                },
-                onError: function () {
+                }.bind(this),
+                onFailure: function () {
                     clearInterval(gps_timer); // Cancel the GPS fix banner.
+                    this.controller.showAlertDialog({
+                        title: $L("Location service failure"),
+                        message: $L(
+                            "Unable to access location services. " +
+                            "You may need to turn on your GPS."
+                        ),
+                        choices: [
+                            {label:$L("Ok"),  value:"ok", type:"dismiss"}
+                        ],
+                        onChoose: function(value) {
+                        }.bind(this)
+                    });
                     Decafbad.Utils.showSimpleBanner("Couldn't find your block!");
                     chain.on_error('getCurrentPosition');
-                }
+                }.bind(this)
             }); 
+        },
+
+        /**
+         * Setup continuous GPS tracking
+         */
+        setupGPSTracking: function (that) {
+            Mojo.log("Starting GPS tracking");
+            BlockChalk.tracking_handle = 
+                that.controller.serviceRequest("palm://com.palm.location", { 
+                    method: "startTracking", 
+                    parameters: {
+                        maximumAge: 0,
+                        accuracy: 1,
+                        responseTime: 2,
+                        subscribe: true
+                    }, 
+                    onSuccess: function (gps_fix) {
+                        Mojo.log("Updated GPS fix: %j", gps_fix);
+                        BlockChalk.gps_fix = gps_fix;
+                    }.bind(that),
+                    onFailure: function (resp) {
+                        this.controller.showAlertDialog({
+                            title: $L("Location service failure"),
+                            message: $L(
+                                "Unable to access location services. " +
+                                "You may need to turn on your GPS."
+                            ),
+                            choices: [
+                                {label:$L("Ok"),  value:"ok", type:"dismiss"}
+                            ],
+                            onChoose: function(value) {
+                            }.bind(that)
+                        });
+                        Decafbad.Utils.showSimpleBanner("Couldn't find your block!");
+                    }.bind(that)
+                }); 
         },
 
         /**
@@ -187,27 +254,6 @@ var BlockChalk = (function () {
                     chain.errorCallback('getNewUserID')
                 );
             }
-        },
-
-        /**
-         * Setup continuous GPS tracking
-         */
-        setupGPSTracking: function (that) {
-            BlockChalk.tracking_handle = 
-                that.controller.serviceRequest("palm://com.palm.location", { 
-                    method: "startTracking", 
-                    parameters: {
-                        maximumAge: 0,
-                        accuracy: 1,
-                        responseTime: 2,
-                        subscribe: true
-                    }, 
-                    onSuccess: function (gps_fix) {
-                        BlockChalk.gps_fix = gps_fix;
-                    },
-                    onError: function (resp) {
-                    }
-                }); 
         },
 
         EOF: null
