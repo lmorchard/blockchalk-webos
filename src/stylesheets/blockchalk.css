@@ -62,7 +62,7 @@ p.helptext {
     font-size: 19px;
     font-weight: bold;
 }
-.palm-dark #chalklist-title {
+.palm-dark .chalklist-title {
     text-align: left;
     color: #fff;
     border-bottom: 2px solid #fff;
@@ -103,21 +103,20 @@ p.helptext {
 .home-scene #locator #coordinates:before { content: "("; }
 .home-scene #locator #coordinates:after { content: ")"; }
 .home-scene #locator #sethome-button { display: none; }
+.home-scene .chalklist-title.search { display: none; }
 
-.home-scene #locator.here .lookslike { display: block; }
-.home-scene #locator.here #sethome-button { display: block; }
+#home-scene.here #locator .lookslike { display: block; }
+#home-scene.here #locator #sethome-button { display: block; }
 
-.home-scene #locator.home #location {
+#home-scene.home #locator #location {
     padding-left: 24px;
     background: transparent url(../images/home-glyph.png) no-repeat 2px left;
 }
 
-.home-scene #locator.search #coordinates { display: block; }
-/*
-.home-scene #locator.search #location:before { content: "\""; }
-.home-scene #locator.search #location:after { content: "\""; }
-*/
-.home-scene #locator.search .browsingat { display: block; }
+#home-scene.search #locator #coordinates { display: block; }
+#home-scene.search #locator .browsingat { display: block; }
+#home-scene.search .chalklist-title.here { display: none; }
+#home-scene.search .chalklist-title.search { display: block; }
 
 .home-scene #chalklist {
     margin-top: 5px;

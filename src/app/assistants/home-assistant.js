@@ -95,7 +95,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 // Set the new mode.
                 this.view_mode = mode;
             }
-            this.controller.get('locator').className = mode.toLowerCase();
+            this.controller.get('home-scene').className = mode.toLowerCase();
             this.command_menu_model.items[1].toggleCmd = mode;
             this.controller.modelChanged(this.command_menu_model);
             this.updateRepliesBadge();
@@ -235,6 +235,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             }
 
             this.controller.get('location').innerText = neighborhood;
+            this.controller.get('search_text').innerText = BlockChalk.search_text;
 
             this.controller.get('coordinates').innerText =
                 BlockChalk.search_location.latitude + ', ' +
