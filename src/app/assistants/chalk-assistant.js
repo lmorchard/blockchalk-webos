@@ -199,7 +199,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Handle tap on the tweet button
          */
         handleTweet: function (ev) {
-            var url = "http://mobile.twitter.com/home?status=" +
+            var url = "http://m.twitter.com/home?status=" +
                 encodeURIComponent(
                     'Check out this chalk on my block ' +
                     'http://blockchalk.com/'+this.chalk.id+'#chalk'
