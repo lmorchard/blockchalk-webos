@@ -109,6 +109,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             var chain = new Decafbad.Chain([
                 BlockChalk.loginToBlockChalk,
+                'getHomeLocation',
                 function (chain) {
                     this.handleCommandHere();
                     chain.next();
