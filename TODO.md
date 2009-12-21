@@ -2,7 +2,6 @@
 
 * Minor
     * Independent cookies to track private / chalkback read state.
-    * Reset scroll position on search / browse refresh.
     * Help screen updates
 
 # 1.6.0

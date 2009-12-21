@@ -16,3 +16,4 @@
         * "You haven't set a home neighborhood yet. Setting a home neighborhood
             lets you keep track of all the chalks where you live."
         * Show current location and "Set as home neighborhood" button.
+    * Reset scroll position on search / browse refresh.

@@ -209,6 +209,10 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Update the chalks list.
          */
         updateChalkList: function (chain, chalks) {
+
+            // Force scroll to top, since scroll position is stuck otherwise
+            this.controller.get('mojo-scene-home-scene-scroller').mojo.revealTop();
+
             // Clear any homeless state that might be stuck.
             this.controller.get('home-scene').removeClassName('homeless');
 
