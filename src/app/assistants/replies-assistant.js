@@ -101,6 +101,8 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     ]
                 },
                 {items: [ 
+                    { command:'Refresh', label: $L('Refresh'), 
+                        icon: 'refresh' }
                 ]}
             ]};
             this.controller.setupWidget(
@@ -187,8 +189,7 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
             ], this);
 
-            this.refreshReplies();
-            this.refreshChalkbacks();
+            this.handleRefresh();
 
         },
 
@@ -228,6 +229,14 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
 
             }
+        },
+
+        /**
+         * Handle taps on the refresh button.
+         */
+        handleRefresh: function (ev) {
+            this.refreshReplies();
+            this.refreshChalkbacks();
         },
 
         /**
