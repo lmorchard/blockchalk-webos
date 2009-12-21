@@ -1,7 +1,6 @@
 # 1.5.0
 
 * Minor
-    * Independent cookies to track private / chalkback read state.
     * Help screen updates
 
 # 1.6.0

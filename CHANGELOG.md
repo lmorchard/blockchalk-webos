@@ -4,6 +4,7 @@
     * Replies and chalkbacks in inbox
     * Home neighborhood
 * Minor
+    * Independent cookies to track private / chalkback read state.
     * Increased GPS accuracy
     * Refresh becomes refresh current location
     * "Tweet This" on chalks / chalkbacks
