@@ -1,8 +1,13 @@
 # 1.5.0
 
 * Major
-    * Replies and chalkbacks in inbox
 * Minor
+    * Independent cookies to track private / chalkback read state.
+    * Home location blank state screen with help text.
+        * "You haven't set a home neighborhood yet. Setting a home neighborhood
+            lets you keep track of all the chalks where you live."
+        * Show current location and "Set as home neighborhood" button.
+    * Reset scroll position on search / browse refresh.
     * Help screen updates
 
 # 1.6.0

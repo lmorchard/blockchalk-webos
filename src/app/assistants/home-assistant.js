@@ -486,7 +486,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     if (mode_after) {
                         this.setViewMode(mode_after);
                     }
-                    this.checkReplies();
+                    this.checkReplies(true);
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
             ], this, (function (e) {
@@ -525,9 +525,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         /**
          * Check for replies and update the counter if necessary.
          */
-        checkReplies: function () {
+        checkReplies: function (force_check) {
             // Try to ensure that reply checking doesn't happen too frequently
-            if (BlockChalk.last_replies_check) {
+            if (!force_check && BlockChalk.last_replies_check) {
                 var last   = BlockChalk.last_replies_check,
                     now    = new Date(),
                     period = (now.getTime() - last.getTime());
