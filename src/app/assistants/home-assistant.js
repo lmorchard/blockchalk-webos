@@ -209,7 +209,11 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Update the chalks list.
          */
         updateChalkList: function (chain, chalks) {
+            // Clear any homeless state that might be stuck.
+            this.controller.get('home-scene').removeClassName('homeless');
 
+            // Fixup items with a few status flags, process dates, then sort by
+            // timestamps in reverse chron order.
             this.chalklist_model.items = chalks.map(function (chalk) {
                 chalk.hasLocation = (chalk.place) ? 'has-location' : '';
                 chalk.hasChalkback = (chalk.chalkbackTo) ? 'has-chalkback' : '';
@@ -222,25 +226,31 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 return (b - a);
             });
 
+            // Update the list itself in the UI.
             var chalk_list = this.controller.get('chalklist');
             chalk_list.mojo.noticeUpdatedItems(0, this.chalklist_model.items);
             chalk_list.mojo.setLength(this.chalklist_model.items.length);
 
+            // Find the name of the neighborhood.
             var neighborhood = this.determineNeighborhoodFromChalks();
 
-            if ('undefined' !== typeof BlockChalk.home_location && 
+            // If this is home, hide the set-as-home button. Show otherwise.
+            if (BlockChalk.home_location &&
                     neighborhood === BlockChalk.home_location.neighborhood) {
                 this.controller.get('sethome-button').hide();
             } else {
                 this.controller.get('sethome-button').show();
             }
 
+            // Display the location and search text in applicable view modes.
             this.controller.get('location').innerText = neighborhood;
             this.controller.get('search_text').innerText = BlockChalk.search_text;
 
+            /* TODO: Enable later for debugging?
             this.controller.get('coordinates').innerText =
                 BlockChalk.search_location.latitude + ', ' +
                 BlockChalk.search_location.longitude;
+            */
             
             chain.next();
         },
@@ -388,25 +398,16 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 BlockChalk.loginToBlockChalk,
                 'getHomeLocation',
                 function (chain) {
-                    if (null !== BlockChalk.home_location) {
+                    if (null == BlockChalk.home_location) {
+                        // Set the homeless state in the view, stop the spinner.
+                        this.controller.get('home-scene').addClassName('homeless');
+                        Decafbad.Utils.hideLoadingSpinner(this);
+                    } else {
                         // We got a location, so proceed with it as search
                         // location.
                         BlockChalk.location_mode = 'home';
                         BlockChalk.search_location = BlockChalk.home_location;
                         chain.next();
-                    } else {
-                        // Warn the user that there's no location.
-                        this.controller.showAlertDialog({
-                            title: $L("No home location"),
-                            message: $L("You haven't set a home location yet."),
-                            choices: [
-                                {label:$L("OK"), value:"skip", type:"dismiss"}
-                            ],
-                            onChoose: function(value) {
-                            }.bind(this)
-                        });
-                        // Location failed, so abort and reset the view mode.
-                        this.setViewMode();
                     }
                 },
                 'getSearchLocationRecentChalks',
@@ -436,29 +437,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         },
 
         /**
-         * Ask for a home location since there is none.
-         */
-        askForHomeLocation: function (chain) {
-            this.controller.showAlertDialog({
-                title: $L("No home location chosen"),
-                message: $L(
-                    "You don't have a home location yet.  Would you like to " +
-                    "make your home here?  If you skip this, you can later " +
-                    "choose 'Make this location home' from the menu."
-                ),
-                choices: [
-                    {label:$L("Make home here"), value:"home", type:"affirmative"},
-                    {label:$L("Skip for now"), value:"skip", type:"negative"}
-                ],
-                onChoose: function(value) {
-                    if ('home' === value) {
-                        this.handleCommandMenuMakeHome();
-                    }
-                }.bind(this)
-            });
-        },
-
-        /**
          * Set a new search location and update display.
          */
         useSearchLocation: function (search_location, search_text) {
@@ -477,6 +455,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             var chain = new Decafbad.Chain([
                 function (chain) {
                     Decafbad.Utils.showLoadingSpinner(this);
+                    // Reset the view mode, which helps in the homeless state.
+                    this.setViewMode();
                     chain.next();
                 },
                 BlockChalk.loginToBlockChalk,

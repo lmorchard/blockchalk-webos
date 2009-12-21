@@ -12,3 +12,7 @@
     * Check home location on app load
     * Refresh button on replies view.
     * Forced reply check on home refresh button
+    * Home location blank state screen with help text.
+        * "You haven't set a home neighborhood yet. Setting a home neighborhood
+            lets you keep track of all the chalks where you live."
+        * Show current location and "Set as home neighborhood" button.

@@ -106,6 +106,8 @@ p.helptext {
 .home-scene .chalklist-title.search { display: none; }
 .home-scene .chalklist-title.home { display: none; margin-top: -0.75em; }
 
+.home-scene #home-help { display: none; }
+
 #home-scene.here #locator .lookslike { display: block; }
 #home-scene.here #locator #sethome-button { display: block; }
 
@@ -120,6 +122,13 @@ p.helptext {
 #home-scene.search #locator .browsingat { display: block; }
 #home-scene.search .chalklist-title.here { display: none; }
 #home-scene.search .chalklist-title.search { display: block; }
+
+#home-scene.homeless #home-help { display: block; }
+#home-scene.homeless .chalklist-title { display: none; }
+#home-scene.homeless .chalklist-title.here { display: none; }
+#home-scene.homeless .chalklist-title.home { display: none; }
+#home-scene.homeless .chalklist-title.search { display: none; }
+#home-scene.homeless #chalklist { display: none; }
 
 .home-scene #chalklist {
     margin-top: 5px;

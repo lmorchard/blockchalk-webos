@@ -8,16 +8,25 @@
                     <div class="lookslike">Looks like you're in</div>
                     <div class="browsingat">This looks like</div>
                     <div><span id="location">(finding your block...)</span></div>
-                    <div id="coordinates"></div>
+                    <!-- TODO: Enable later for debugging?
+                        <div id="coordinates"></div>
+                    -->
                     <div id="sethome-button" x-mojo-element="Button" class="primary"></div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="home-help">
+        <p>You haven't set a home neighborhood yet. Setting a home neighborhood
+            lets you keep track of all the chalks where you live.</p>
+    </div>
+
     <div class="chalklist-title here">Nearby chalks</div>
     <div class="chalklist-title home">&nbsp;</div>
-    <div class="chalklist-title search">Chalks nearby "<span id="search_text">...</span>"</div>
+    <div class="chalklist-title search">
+        Chalks nearby "<span id="search_text">...</span>"
+    </div>
     
     <div id="chalklist" x-mojo-element="List"></div>
     
