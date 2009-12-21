@@ -181,7 +181,6 @@ var BlockChalk = (function () {
          * Setup continuous GPS tracking
          */
         setupGPSTracking: function (that) {
-            Mojo.log("Starting GPS tracking");
             BlockChalk.tracking_handle = 
                 that.controller.serviceRequest("palm://com.palm.location", { 
                     method: "startTracking", 
@@ -192,7 +191,6 @@ var BlockChalk = (function () {
                         subscribe: true
                     }, 
                     onSuccess: function (gps_fix) {
-                        Mojo.log("Updated GPS fix: %j", gps_fix);
                         BlockChalk.gps_fix = gps_fix;
                     }.bind(that),
                     onFailure: function (resp) {
