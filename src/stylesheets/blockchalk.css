@@ -17,6 +17,7 @@ p.helptext {
     background-image: url(../images/menu-icon-home.png);
 }
 .home-scene #reply-count {
+    -webkit-opacity: 0.7;
     position: absolute;
     text-align: center;
     top: 6px;
