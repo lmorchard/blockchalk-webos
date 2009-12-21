@@ -67,11 +67,10 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             );
 
             if (!this.chalkback_item) {
-                this.controller.get('subtitle')
-                    .update($L('new chalk, where you are right now'));
+                this.controller.get('compose-scene').className = 'here';
                 this.controller.get('helptext-chalkback').hide();
             } else {
-                this.controller.get('subtitle').update($L('chalkback'));
+                this.controller.get('compose-scene').className = 'chalkback';
                 this.controller.get('helptext-chalkback').show();
             }
 

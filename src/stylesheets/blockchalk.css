@@ -174,14 +174,18 @@ p.helptext {
 .chalk-scene.chalkback .subtitle.chalkback {
     display: block;
 }
-.compose-scene #character-count span {
+#compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;
 }
-.compose-scene #character-count.over span {
+#compose-scene #character-count.over span {
     font-weight: bold;
     color: #f44;
 }
+#compose-scene .subtitle { display: none; }
+#compose-scene.here .subtitle.here { display: block; }
+#compose-scene.chalkback .subtitle.chalkback { display: block; }
+
 .replies-scene #replies-mode {
 }
 .replies-scene #replies-mode .palm-radiobutton {
