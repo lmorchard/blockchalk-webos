@@ -102,8 +102,9 @@ p.helptext {
 .home-scene #locator #coordinates { display: none; }
 .home-scene #locator #coordinates:before { content: "("; }
 .home-scene #locator #coordinates:after { content: ")"; }
-.home-scene #locator #sethome-button { display: none; }
+.home-scene #locator #sethome-button { display: block; }
 .home-scene .chalklist-title.search { display: none; }
+.home-scene .chalklist-title.home { display: none; margin-top: -0.75em; }
 
 #home-scene.here #locator .lookslike { display: block; }
 #home-scene.here #locator #sethome-button { display: block; }
@@ -112,6 +113,8 @@ p.helptext {
     padding-left: 24px;
     background: transparent url(../images/home-glyph.png) no-repeat 2px left;
 }
+#home-scene.home .chalklist-title.here { display: none; }
+#home-scene.home .chalklist-title.home { display: block; }
 
 #home-scene.search #locator #coordinates { display: block; }
 #home-scene.search #locator .browsingat { display: block; }
@@ -169,8 +172,11 @@ p.helptext {
     font-weight: bold;
     color: #f44;
 }
+.replies-scene #replies-mode {
+}
 .replies-scene #replies-mode .palm-radiobutton {
-    background-color: #000;
+    padding: 2px 0 2px 0;
+    background-color: rgb(57, 62, 67);
 }
 .replies-scene #replies .modetitle, .replies-scene #chalkbacks .modetitle {
     text-align: left;
