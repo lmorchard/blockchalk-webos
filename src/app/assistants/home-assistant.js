@@ -362,7 +362,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Launch location search card.
          */
         handleCommandReplies: function (event) {
-            this.updateRepliesBadge(0);
+            this.updateRepliesBadge();
             this.controller.stageController.pushScene('replies');
         },
 
@@ -402,7 +402,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 BlockChalk.loginToBlockChalk,
                 'getHomeLocation',
                 function (chain) {
-                    if (null == BlockChalk.home_location) {
+                    if (null === BlockChalk.home_location) {
                         // Set the homeless state in the view, stop the spinner.
                         this.controller.get('home-scene').addClassName('homeless');
                         Decafbad.Utils.hideLoadingSpinner(this);
@@ -482,14 +482,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
         /**
          * Update the badge display of new replies.
          */
-        updateRepliesBadge: function (count) {
-            if (!count) {
-                // If no count supplied, simply refresh the current
-                count = BlockChalk.replies_count;
-            } else {
-                BlockChalk.replies_count = count;
-            }
-
+        updateRepliesBadge: function () {
             // Create the reply counter badge, if not already present.
             if (!this.controller.get('reply-count')) {
                 document.body.select('.conversation')[0].insert(
@@ -500,9 +493,12 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             var badge = this.controller.get('reply-count');
 
             // If the count is over zero, show the badge and update it.
+            var count = BlockChalk.replies_count + BlockChalk.chalkbacks_count;
             if (count > 0) {
                 badge.update(count);
                 badge.show();
+            } else {
+                badge.hide();
             }
         },
 
@@ -510,6 +506,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Check for replies and update the counter if necessary.
          */
         checkReplies: function (force_check) {
+
             // Try to ensure that reply checking doesn't happen too frequently
             if (!force_check && BlockChalk.last_replies_check) {
                 var last   = BlockChalk.last_replies_check,
@@ -520,42 +517,55 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             BlockChalk.last_replies_check = new Date();
 
             // Try getting the timestamp of last replies read.
-            var cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
-                replies_read = cookie.get(),
-                all_items = [];
+            var replies_cookie = new Mojo.Model.Cookie('blockchalk_replies_read'),
+                replies_read = replies_cookie.get(),
+                replies_count = 0,
+                chalkbacks_cookie = new Mojo.Model.Cookie('blockchalk_chalkbacks_read'),
+                chalkbacks_read = chalkbacks_cookie.get(),
+                chalkbacks_count = 0;
 
             // Check replies and chalkbacks to assemble count of unseen items.
             // TODO: This seems kind of ugly.  Find a better way?
             var chain = new Decafbad.Chain([
                 function (chain) {
-                    // Assemble replies.
+                    // Get replies and count any newer than last replies read
+                    // date.
                     BlockChalk.service.getRecentReplies(
                         BlockChalk.user_id,
                         function (items) {
-                            if (items) { all_items = all_items.concat(items); }
+                            items.each(function (item) {
+                                var item_time = item.datetime.getTime();
+                                if (!replies_read || item_time > replies_read) {
+                                    replies_count++;
+                                }
+                            }, this);
+                            // Update the global replies counter.
+                            BlockChalk.replies_count = replies_count;
                             chain.next();
                         }.bind(this)
                     );
                 },
                 function (chain) {
-                    // Assemble chalkbacks.
+                    // Get chalkbacks and count any newer than last chalkbacks
+                    // read date.
                     BlockChalk.service.getRecentChalkbacks(
                         BlockChalk.user_id,
                         function (items) {
-                            if (items) { all_items = all_items.concat(items); }
+                            items.each(function (item) {
+                                var item_time = item.datetime.getTime();
+                                if (!chalkbacks_read || item_time > chalkbacks_read) {
+                                    chalkbacks_count++;
+                                }
+                            }, this);
+                            // Update the global chalkbacks counter.
+                            BlockChalk.chalkbacks_count = chalkbacks_count;
                             chain.next();
                         }.bind(this)
                     );
                 },
                 function () {
-                    // Count new items since last read, update the badge.
-                    var count = 0;
-                    all_items.each(function (reply) {
-                        if (!replies_read || reply.datetime.getTime() > replies_read) {
-                            count++;
-                        }
-                    }, this);
-                    this.updateRepliesBadge(count);
+                    // Finally, update the replies badge from counters.
+                    this.updateRepliesBadge();
                 }
             ], this, function (e) {
             }).next();

@@ -241,14 +241,22 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
         /**
          * Handle taps on the replies mode radio button.
+         * Also update last-read timestamp cookies.
          */
         handleModeChange: function (ev) {
             if ('replies' === ev.value) {
                 this.controller.get('replies').show();
                 this.controller.get('chalkbacks').hide();
+                var replies_cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
+                replies_cookie.put( (new Date()).getTime() );
+                BlockChalk.replies_count = 0;
             } else {
                 this.controller.get('replies').hide();
                 this.controller.get('chalkbacks').show();
+                var chalkbacks_cookie = 
+                    new Mojo.Model.Cookie('blockchalk_chalkbacks_read');
+                chalkbacks_cookie.put( (new Date()).getTime() );
+                BlockChalk.chalkbacks_count = 0;
             }
         },
 
