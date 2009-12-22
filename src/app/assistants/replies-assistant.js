@@ -85,7 +85,9 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
             );
 
             this.command_menu_model = {items: [
-                {items: [ 
+                {items: [
+                    { command:'NewChalk', label: $L('+ New ...'), 
+                        icon: 'new', shortcut: 'N' }
                 ]},
                 {
                     toggleCmd: 'Replies', 
@@ -109,6 +111,72 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 Mojo.Menu.commandMenu, {}, this.command_menu_model
             );
 
+        },
+
+        /**
+         * React to card activation.
+         */
+        activate: function (ev) {
+
+            // HACK: Hide the new chalk command button on this scene.
+            $$('#mojo-scene-replies .command-menu .palm-menu-group')[0]
+                .setStyle('opacity: 0');
+
+            Decafbad.Utils.setupListeners([
+                ['replies-mode', Mojo.Event.propertyChange, this.handleModeChange],
+                ['chalkback-list', Mojo.Event.listTap, this.handleChalkTap],
+                ['replylist', Mojo.Event.listTap, this.handleReplyTap],
+                ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
+            ], this);
+
+            this.handleRefresh();
+
+        },
+
+        /**
+         * React for card deactivation.
+         */
+        deactivate: function (ev) {
+            // Decafbad.Utils.clearListeners(this);
+        },
+
+        /**
+         * Handle ultimate card clean up.
+         */
+        cleanup: function (ev) {
+            delete this.scrim;
+        },
+
+        /**
+         * Handle menu commands.
+         */
+        handleCommand: function (event) {
+            if (event.type === Mojo.Event.command) {
+
+                // Check for commands meant for home scene.
+                if (['Here', 'Home', 'Search'].indexOf(event.command) !== -1) {
+                    return this.controller.stageController.popScenesTo(
+                        'home', { command: event.command }
+                    );
+                }
+
+                if ('MenuClearLastRead' === event.command) {
+                    var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
+                    cookie.put(null);
+                    return Decafbad.Utils.showSimpleBanner(
+                        'Cleared replies last read cookie.'
+                    );
+                }
+
+            }
+        },
+
+        /**
+         * Handle taps on the refresh button.
+         */
+        handleRefresh: function (ev) {
+            this.refreshReplies();
+            this.refreshChalkbacks();
         },
 
         /**
@@ -175,68 +243,6 @@ RepliesAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
             );
 
-        },
-
-        /**
-         * React to card activation.
-         */
-        activate: function (ev) {
-
-            Decafbad.Utils.setupListeners([
-                ['replies-mode', Mojo.Event.propertyChange, this.handleModeChange],
-                ['chalkback-list', Mojo.Event.listTap, this.handleChalkTap],
-                ['replylist', Mojo.Event.listTap, this.handleReplyTap],
-                ['replylist', Mojo.Event.listDelete, this.handleBuryReply]
-            ], this);
-
-            this.handleRefresh();
-
-        },
-
-        /**
-         * React for card deactivation.
-         */
-        deactivate: function (ev) {
-            // Decafbad.Utils.clearListeners(this);
-        },
-
-        /**
-         * Handle ultimate card clean up.
-         */
-        cleanup: function (ev) {
-            delete this.scrim;
-        },
-
-        /**
-         * Handle menu commands.
-         */
-        handleCommand: function (event) {
-            if (event.type === Mojo.Event.command) {
-
-                // Check for commands meant for home scene.
-                if (['Here', 'Home', 'Search'].indexOf(event.command) !== -1) {
-                    return this.controller.stageController.popScenesTo(
-                        'home', { command: event.command }
-                    );
-                }
-
-                if ('MenuClearLastRead' === event.command) {
-                    var cookie = new Mojo.Model.Cookie('blockchalk_replies_read');
-                    cookie.put(null);
-                    return Decafbad.Utils.showSimpleBanner(
-                        'Cleared replies last read cookie.'
-                    );
-                }
-
-            }
-        },
-
-        /**
-         * Handle taps on the refresh button.
-         */
-        handleRefresh: function (ev) {
-            this.refreshReplies();
-            this.refreshChalkbacks();
         },
 
         /**

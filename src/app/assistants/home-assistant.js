@@ -95,6 +95,20 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 // Set the new mode.
                 this.view_mode = mode;
             }
+
+            this.view_mode = ''+this.view_mode;
+
+            // HACK: Hide the new chalk command button in non-{home,here} modes.
+            setTimeout(function () {
+                var first_cmd_group = 
+                    $$('#mojo-scene-home .command-menu .palm-menu-group')[0];
+                if (['home','here'].indexOf(this.view_mode.toLowerCase()) === -1) {
+                    first_cmd_group.setStyle('opacity: 0');
+                } else {
+                    first_cmd_group.setStyle('');
+                }
+            }.bind(this), 0.1);
+
             this.controller.get('home-scene').className = mode.toLowerCase();
             this.command_menu_model.items[1].toggleCmd = mode;
             this.controller.modelChanged(this.command_menu_model);
@@ -348,6 +362,10 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Launch new chalk composition card.
          */
         handleCommandNewChalk: function (event) {
+            if (['home','here'].indexOf(this.view_mode.toLowerCase()) === -1) {
+                // Ignore taps when not in home or here view modes.
+                return;
+            }
             this.controller.stageController.pushScene('compose');
         },
         
