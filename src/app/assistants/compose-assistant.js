@@ -82,9 +82,12 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          * Hook up listeners on card activation.
          */
         activate: function (event) {
+
+            /*
             var chain = new Decafbad.Chain([
                 BlockChalk.acquireGPSFix
             ], this, function (e) { }).next();
+            */
 
             Decafbad.Utils.setupListeners([
                 ['chalk-message', Mojo.Event.propertyChange, this.handleChange],
