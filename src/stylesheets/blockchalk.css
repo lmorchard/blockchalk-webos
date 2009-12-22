@@ -13,8 +13,11 @@ p.helptext {
 .palm-menu-icon.here {
     background-image: url(../images/menu-icon-here.png);
 }
+.palm-menu-icon.conversation {
+    background-image: url(../images/Envelope_Icon_32x64.png);
+}
 .palm-menu-icon.home {
-    background-image: url(../images/menu-icon-home.png);
+    background-image: url(../images/Home_Icon_32x64.png);
 }
 .home-scene #reply-count {
     -webkit-opacity: 0.7;
