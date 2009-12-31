@@ -24,6 +24,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         setup: function () {
 
+            BlockChalk.setupGlobalMenu(this.controller);
+
             BlockChalk.setupGPSTracking(this);
 
             this.chalklist_model = { items: [ ] };
