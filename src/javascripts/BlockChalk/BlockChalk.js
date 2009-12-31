@@ -181,6 +181,7 @@ var BlockChalk = (function () {
          * Setup continuous GPS tracking
          */
         setupGPSTracking: function (that) {
+            if (BlockChalk.tracking_handle) { return; }
             BlockChalk.tracking_handle = 
                 that.controller.serviceRequest("palm://com.palm.location", { 
                     method: "startTracking", 
