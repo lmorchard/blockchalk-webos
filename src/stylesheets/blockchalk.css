@@ -226,6 +226,15 @@ p.helptext {
     background-color: rgb(57,62,67);
     padding-bottom: 0.5em;
 }
+.help-scene .palm-page-header {
+    background: #000;
+}
+.palm-dark .help-scene .palm-page-header.multi-line {
+    padding-bottom: 17px;
+}
+.palm-dark .instructions-scene .palm-page-header.multi-line {
+    padding-bottom: 17px;
+}
 .instructions-scene .help-text h2 {
     font-size: 20px;
     padding: 0 14px 0 14px;
@@ -257,8 +266,11 @@ p.helptext {
 .instructions-scene ul.icon-help li.here div.icon {
     background-image: url(../images/menu-icon-here.png);
 }
+.instructions-scene ul.icon-help li.home div.icon {
+    background-image: url(../images/Home_Icon_32x64.png);
+}
 .instructions-scene ul.icon-help li.replies div.icon {
-    background-image: url(../images/menu-icon-conversation.png);
+    background-image: url(../images/Envelope_Icon_32x64.png);
 }
 .instructions-scene ul.icon-help li.search div.icon {
     background-image: url(../images/menu-icon-search.png);
