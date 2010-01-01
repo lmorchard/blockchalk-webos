@@ -25,11 +25,13 @@ PreferencesAssistant.prototype = (function () { /** @lends PreferencesAssistant#
                 BlockChalk.prefs_model
             );
 
+            /*
             this.controller.setupWidget(
                 'reset_user_id',
                 { label: $L('Reset user ID') },
                 {}
             );
+            */
 
         },
 
@@ -39,9 +41,9 @@ PreferencesAssistant.prototype = (function () { /** @lends PreferencesAssistant#
         activate: function (ev) {
             Decafbad.Utils.setupListeners([
                 ['profanity_filter', Mojo.Event.propertyChange, 
-                    this.handlePropertyChange],
+                    this.handlePropertyChange]/*,
                 ['reset_user_id', Mojo.Event.tap, 
-                    this.handleResetUserID]
+                    this.handleResetUserID]*/
             ], this);
         },
 
