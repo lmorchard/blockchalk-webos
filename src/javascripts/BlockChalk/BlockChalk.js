@@ -126,6 +126,13 @@ var BlockChalk = (function () {
          * Intended to be bound to a scene assistant.
          */
         acquireGPSFix: function (chain) {
+
+            if (BlockChalk.tracking_handle && BlockChalk.gps_fix) {
+                // Skip acquisition if tracking is working and we have a fix.
+                BlockChalk.search_location = BlockChalk.gps_fix;
+                return chain.next();
+            }
+
             Decafbad.Utils.showSimpleBanner('Finding your block...');
 
             // Set up a periodic banner while GPS fix still in progress...

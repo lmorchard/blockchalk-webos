@@ -121,6 +121,7 @@ p.helptext {
 }
 #home-scene.home .chalklist-title.here { display: none; }
 #home-scene.home .chalklist-title.home { display: block; }
+#home-scene.home #locator #sethome-button { display: none; }
 
 #home-scene.search #locator #coordinates { display: block; }
 #home-scene.search #locator .browsingat { display: block; }

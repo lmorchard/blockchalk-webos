@@ -104,7 +104,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             setTimeout(function () {
                 var first_cmd_group = 
                     $$('#mojo-scene-home .command-menu .palm-menu-group')[0];
-                if (['home','here'].indexOf(this.view_mode.toLowerCase()) === -1) {
+                if (['here'].indexOf(this.view_mode.toLowerCase()) === -1) {
                     first_cmd_group.setStyle('opacity: 0');
                 } else {
                     first_cmd_group.setStyle('');
@@ -254,9 +254,14 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             // Find the name of the neighborhood.
             var neighborhood = this.determineNeighborhoodFromChalks();
 
+            if ('home' === BlockChalk.location_mode) {
+                // This is 'home', adjust the neighborhood name.
+                BlockChalk.home_location.neighborhood = neighborhood;
+            }
+
             // If this is home, hide the set-as-home button. Show otherwise.
             if (BlockChalk.home_location &&
-                    neighborhood === BlockChalk.home_location.neighborhood) {
+                    (neighborhood === BlockChalk.home_location.neighborhood)) {
                 this.controller.get('sethome-button').hide();
             } else {
                 this.controller.get('sethome-button').show();
@@ -364,7 +369,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          * Launch new chalk composition card.
          */
         handleCommandNewChalk: function (event) {
-            if (['home','here'].indexOf(this.view_mode.toLowerCase()) === -1) {
+            if (['here'].indexOf(this.view_mode.toLowerCase()) === -1) {
                 // Ignore taps when not in home or here view modes.
                 return;
             }
@@ -397,10 +402,13 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 },
                 BlockChalk.loginToBlockChalk,
                 BlockChalk.acquireGPSFix,
+                function (chain) {
+                    BlockChalk.location_mode = 'here';
+                    chain.next();
+                },
                 'getSearchLocationRecentChalks',
                 'updateChalkList',
                 function (chain) {
-                    BlockChalk.location_mode = 'here';
                     this.setViewMode('Here');
                     Decafbad.Utils.hideLoadingSpinner(this);
                 }
