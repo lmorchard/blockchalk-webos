@@ -143,7 +143,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
         handleBury: function (ev) {
             this.controller.showAlertDialog({
                 title: $L("Bury this chalk?"),
-                message: $L("Once buried, you will not see this chalk again."),
+                message: $L("Burying a chalk hides it from your view and helps us fight abuse."),
                 choices: [
                     {label:$L("Bury"), value:"yes", type:"negative"},
                     {label:$L("Cancel"),  value:"no", type:"dismiss"}
