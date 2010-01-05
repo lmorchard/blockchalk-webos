@@ -23,38 +23,42 @@ HelpAssistant.prototype = (function () { /** @lends HelpAssistant */
                 _APP_VersionNumber + " by " + _APP_PublisherName;
 
             var supportitems = [];
-            var i = 0;
-            if (typeof _APP_Publisher_URL !== "undefined" && _APP_Publisher_URL) {
-                supportitems[i++] = {
-                    text: _APP_PublisherName + '', 
-                    detail: $L(_APP_Publisher_URL), 
-                    Class: $L('img_web'),
-                    type: 'web'
-                };
-            }
-            if (typeof _APP_Support_URL !== "undefined" && _APP_Support_URL) {
-                supportitems[i++] = {
-                    text: 'Support Website',
-                    detail:$L(_APP_Support_URL), 
-                    Class:$L("img_web"),
-                    type:'web'
-                };
-            }
-            if (typeof _APP_Support_Email !== "undefined" && _APP_Support_Email) {
-                supportitems[i++] = {
-                    text: 'Email Support',
-                    detail:$L(_APP_Support_Email), 
-                    Class:$L("img_email"),
-                    type:'email'
-                };
-            }
-            if (typeof _APP_Support_Phone !== "undefined" && _APP_Support_Phone) {		            
-                supportitems[i++] = {
-                    text: $L(_APP_Support_Phone),
-                    detail:$L(_APP_Support_Phone), 
-                    Class:$L("img_phone"),
-                    type:'phone'
-                };
+            if (_APP_Support_Resource) {
+                supportitems = _APP_Support_Resource;
+            } else {
+                var i = 0;
+                if (typeof _APP_Support_Email !== "undefined" && _APP_Support_Email) {
+                    supportitems[i++] = {
+                        text: 'Email Support',
+                        detail:$L(_APP_Support_Email), 
+                        Class:$L("img_email"),
+                        type:'email'
+                    };
+                }
+                if (typeof _APP_Publisher_URL !== "undefined" && _APP_Publisher_URL) {
+                    supportitems[i++] = {
+                        text: _APP_PublisherName + '', 
+                        detail: $L(_APP_Publisher_URL), 
+                        Class: $L('img_web'),
+                        type: 'web'
+                    };
+                }
+                if (typeof _APP_Support_URL !== "undefined" && _APP_Support_URL) {
+                    supportitems[i++] = {
+                        text: 'Support Website',
+                        detail:$L(_APP_Support_URL), 
+                        Class:$L("img_web"),
+                        type:'web'
+                    };
+                }
+                if (typeof _APP_Support_Phone !== "undefined" && _APP_Support_Phone) {		            
+                    supportitems[i++] = {
+                        text: $L(_APP_Support_Phone),
+                        detail:$L(_APP_Support_Phone), 
+                        Class:$L("img_phone"),
+                        type:'phone'
+                    };
+                }
             }
 
             try {
@@ -98,7 +102,7 @@ HelpAssistant.prototype = (function () { /** @lends HelpAssistant */
 
                 },
                 {
-                    listTitle: $L('Support'),
+                    listTitle: $L('Contact'),
                     items : supportitems
                 }
             );
