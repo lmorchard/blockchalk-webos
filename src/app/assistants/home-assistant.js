@@ -331,7 +331,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     // Decafbad.Utils.showSimpleBanner('Buried a chalk from view');
                 },
                 function (resp) {
-                    Decafbad.Utils.showSimpleBanner('Chalk bury FAILED!');
+                    Decafbad.Utils.showSimpleBanner('Chalk report FAILED!');
                 }
             );
         },

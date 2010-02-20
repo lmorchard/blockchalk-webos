@@ -65,7 +65,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 'chalk-reply-button', { label: $L('Reply privately') }, {}
             );
             this.controller.setupWidget(
-                'chalk-bury-button', { label: $L('Bury') }, {}
+                'chalk-bury-button', { label: $L('Report') }, {}
             );
             this.controller.setupWidget(
                 'chalk-tweet-button', { label: $L('Tweet this') }, {}
@@ -142,10 +142,10 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          */
         handleBury: function (ev) {
             this.controller.showAlertDialog({
-                title: $L("Bury this chalk?"),
-                message: $L("Burying a chalk hides it from your view and helps us fight abuse."),
+                title: $L("Report this chalk?"),
+                message: $L("Reporting a chalk hides it from your view and helps us fight abuse."),
                 choices: [
-                    {label:$L("Bury"), value:"yes", type:"negative"},
+                    {label:$L("Report"), value:"yes", type:"negative"},
                     {label:$L("Cancel"),  value:"no", type:"dismiss"}
                 ],
                 onChoose: function(value) {
@@ -157,7 +157,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                                     .popScene({ refresh: true });
                             }.bind(this),
                             function (resp) {
-                                Decafbad.Utils.showSimpleBanner($L('Bury failed!'));
+                                Decafbad.Utils.showSimpleBanner($L('Report failed!'));
                             }.bind(this)
                         );
                     }
