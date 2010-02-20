@@ -239,11 +239,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 chalk.time = chalk.datetime.toLocaleTimeString();
                 chalk.date = chalk.datetime.toLocaleDateString();
                 return chalk;
-            }, this).sort(function (ca, cb) {
-                var a = ca.datetime.getTime(),
-                    b = cb.datetime.getTime();
-                return (b - a);
-            });
+            }, this);
 
             // Update the list itself in the UI.
             var chalk_list = this.controller.get('chalklist');
