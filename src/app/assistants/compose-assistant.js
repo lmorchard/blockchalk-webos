@@ -28,12 +28,13 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             };
 
             if (!this.chalkback_item) {
+                // Remove the 'Post a new chalkback' title.
+                // TODO: Change this to a CSS-driven mode.
                 this.controller.get('chalkback').remove();
             } else {
                 this.controller.get('contents').update(
                     this.chalkback_item.contents.escapeHTML()
                 );
-
                 this.controller.get('meta').update([
                     BlockChalk.formatDate(this.chalkback_item.datetime),
                     ", ",
