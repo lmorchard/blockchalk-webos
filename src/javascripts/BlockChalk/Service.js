@@ -77,6 +77,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {object}   gps_fix           GPS location fix
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
      */
@@ -84,9 +85,11 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/chalks', {
             method: 'get',
             parameters: {
-                'user': user_id, 
-                'long': gps_fix.longitude,
-                'lat': gps_fix.latitude
+                'user':     user_id,
+                'long':     gps_fix.longitude,
+                'lat':      gps_fix.latitude,
+                'accuracy': ('nearby' == this.location_context) ?
+                    gps_fix.horizAccuracy : null,
                 'context':  this.location_context
             },
             onSuccess: function (data, resp) {
@@ -142,6 +145,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {object}   gps_fix           GPS location fix
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
      * @param {string}   user_id           User ID for chalk
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
@@ -150,9 +154,10 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/chalk/', {
             method: 'post',
             parameters: {
-                'msg':  msg,
+                'msg': msg,
                 'long': gps_fix.longitude,
-                'lat':  gps_fix.latitude,
+                'lat': gps_fix.latitude,
+                'accuracy': gps_fix.horizAccuracy,
                 'user': user_id,
                 'chalkbackTo': chalkback_to
             },
@@ -171,6 +176,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {object}   gps_fix           GPS location fix
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
      * @param {string}   user_id           User ID for chalk
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
@@ -179,11 +185,12 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/reply/', {
             method: 'post',
             parameters: {
-                'replyTo': reply_to,
-                'msg':     msg,
-                'long':    gps_fix.longitude,
-                'lat':     gps_fix.latitude,
-                'user':    user_id
+                'replyTo':  reply_to,
+                'msg':      msg,
+                'long':     gps_fix.longitude,
+                'lat':      gps_fix.latitude,
+                'accuracy': gps_fix.horizAccuracy,
+                'user':     user_id
             },
             onSuccess: on_success,
             onFailure: on_failure
@@ -244,6 +251,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {object}   gps_fix           GPS location fix
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
      */
@@ -251,9 +259,10 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         return this.apiRequest('/home', {
             method: 'post',
             parameters: {
-                'long':    gps_fix.longitude,
-                'lat':     gps_fix.latitude,
-                'user':    user_id
+                'long':     gps_fix.longitude,
+                'lat':      gps_fix.latitude,
+                'accuracy': gps_fix.horizAccuracy,
+                'user':     user_id
             },
             onSuccess: on_success,
             onFailure: on_failure
@@ -269,7 +278,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             parameters: {
                 'long':     gps_fix.longitude,
                 'lat':      gps_fix.latitude,
-                'accuracy': gps_fix.horizAccuracy,
+                'accuracy': gps_fix.horizAccuracy
             },
             onSuccess: on_success,
             onFailure: on_failure
