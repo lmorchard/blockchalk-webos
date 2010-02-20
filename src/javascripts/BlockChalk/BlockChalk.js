@@ -12,8 +12,6 @@ var BlockChalk = (function () {
 
         // Current logged in user ID
         user_id: null,
-        // Current location mode (here, home, search)
-        location_mode: 'here',
         // Current GPS fix
         gps_fix: null,
         // Current location for chalk search

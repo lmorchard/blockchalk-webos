@@ -7,6 +7,9 @@
 /*global Class, Ajax, Decafbad, BlockChalk, Mojo, $A, $L, $H */
 BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
 
+    // Current location context (nearby, home, browse)
+    location_context: 'nearby',
+
     /**
      * BlockChalk service wrapper
      *
@@ -24,6 +27,23 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         this.user_id = null;
 
         return this;
+    },
+
+    /**
+     * Set the current location context from the set of home, nearby, browse.
+     */
+    setLocationContext: function (context) {
+        if (['home', 'nearby', 'browse'].indexOf(context) !== -1) {
+            this.location_context = context;
+        }
+        return this.location_context;
+    },
+
+    /**
+     * Return the current location context.
+     */
+    getLocationContext: function () {
+        return this.location_context;
     },
 
     /**
@@ -67,6 +87,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
                 'user': user_id, 
                 'long': gps_fix.longitude,
                 'lat': gps_fix.latitude
+                'context':  this.location_context
             },
             onSuccess: function (data, resp) {
                 if (!data || !data.length) {

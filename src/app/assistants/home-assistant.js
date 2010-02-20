@@ -177,7 +177,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 }
                 if (typeof ev.search_location !== 'undefined') {
                     // Accept a change in search location from popped scene.
-                    BlockChalk.location_mode = 'search';
+                    BlockChalk.service.setLocationContext('browse');
                     this.useSearchLocation(ev.search_location, ev.search_text);
                 }
             }
@@ -206,9 +206,8 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
          */
         getSearchLocationRecentChalks: function (chain) {
             Decafbad.Utils.showSimpleBanner('Finding recent chalks...');
-            Mojo.log("Location mode = %s", BlockChalk.location_mode);
 
-            if ('here' == BlockChalk.location_mode) {
+            if ('nearby' == BlockChalk.service.getLocationContext()) {
                 // If using 'here', make sure search location is up to date
                 // with GPS fix.
                 BlockChalk.search_location = BlockChalk.gps_fix;
@@ -254,7 +253,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             // Find the name of the neighborhood.
             var neighborhood = this.determineNeighborhoodFromChalks();
 
-            if ('home' === BlockChalk.location_mode) {
+            if ('home' === BlockChalk.service.getLocationContext()) {
                 // This is 'home', adjust the neighborhood name.
                 BlockChalk.home_location.neighborhood = neighborhood;
             }
@@ -403,7 +402,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 BlockChalk.loginToBlockChalk,
                 BlockChalk.acquireGPSFix,
                 function (chain) {
-                    BlockChalk.location_mode = 'here';
+                    BlockChalk.service.setLocationContext('nearby');
                     chain.next();
                 },
                 'getSearchLocationRecentChalks',
@@ -437,7 +436,7 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     } else {
                         // We got a location, so proceed with it as search
                         // location.
-                        BlockChalk.location_mode = 'home';
+                        BlockChalk.service.setLocationContext('home');
                         BlockChalk.search_location = BlockChalk.home_location;
                         chain.next();
                     }

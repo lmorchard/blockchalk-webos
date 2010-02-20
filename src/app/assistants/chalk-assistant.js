@@ -29,7 +29,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.chalk.distance
             ].join(' ').escapeHTML());
 
-            if (['here','home'].indexOf(BlockChalk.location_mode) === -1) {
+            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) === -1) {
                 // User browsing another location, disallow chalkbacks.
                 this.controller.get('chalkback-wrapper').remove();
                 this.controller.get('reply-wrapper').width = "100%";
@@ -82,7 +82,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
                 ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet]
             ];
-            if (['here','home'].indexOf(BlockChalk.location_mode) !== -1) {
+            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) === -1) {
                 // Wire up the chalkback button if allowed.
                 listeners.push([
                     'chalk-chalkback-button', 
