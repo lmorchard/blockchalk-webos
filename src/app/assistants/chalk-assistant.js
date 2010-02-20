@@ -68,7 +68,10 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 'chalk-bury-button', { label: $L('Report') }, {}
             );
             this.controller.setupWidget(
-                'chalk-tweet-button', { label: $L('Tweet this') }, {}
+                'chalk-tweet-button', { label: $L('Tweet') }, {}
+            );
+            this.controller.setupWidget(
+                'chalk-email-button', { label: $L('Email') }, {}
             );
 
         },
@@ -80,7 +83,8 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             var listeners = [
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
-                ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet]
+                ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet],
+                ['chalk-email-button', Mojo.Event.tap, this.handleEmail]
             ];
             if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) === -1) {
                 // Wire up the chalkback button if allowed.
@@ -210,6 +214,26 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 parameters:  {
                     id: 'com.palm.app.browser',
                     params: { target: url }
+                }
+            });
+        },
+
+        /**
+         * Handle tap on the email button
+         */
+        handleEmail: function (ev) {
+            this.controller.serviceRequest('palm://com.palm.applicationManager', {
+                method: 'open',
+                parameters: {
+                    id: 'com.palm.app.email',
+                    params: {
+                        summary: 'Check out this post from BlockChalk',
+                        text: $L(
+                            "Hey, I wanted you to see this post from BlockChalk:\n\n"+
+                            "http://blockchalk.com/"
+                        )+this.chalk.id,
+                        recipients: [ ]
+                    }
                 }
             });
         },
