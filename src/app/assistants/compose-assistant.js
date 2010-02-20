@@ -41,13 +41,12 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 ].join('').escapeHTML());
             }
 
+            // Setup the posting text field.
             this.controller.setupWidget(
                 'chalk-message',
                 {
                     'modelProperty': 'message',
-                    'hintText': (!this.chalkback_item) ?
-                        $L('Insert your genius prose here.') :
-                        $L('Use this space to "chalkback"'),
+                    'hintText': '',
                     'multiline':true,
                     'enterSubmits':true,
                     'autoFocus':true,
@@ -55,6 +54,16 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                     'autoReplace': true
                 },
                 this.model
+            );
+
+            // Dynamically update text field hint text from the posting hint
+            // API resource.
+            BlockChalk.service.getPostingHint(
+                BlockChalk.gps_fix,
+                function (data) {
+                    $$('#chalk-message .multiline-hint-text')[0]
+                        .update(data.hint.short);
+                }
             );
 
             this.controller.setupWidget(

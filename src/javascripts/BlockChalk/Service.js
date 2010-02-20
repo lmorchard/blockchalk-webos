@@ -240,6 +240,22 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     },
 
     /**
+     * Get posting hint text from the service.
+     */
+    getPostingHint: function (gps_fix, on_success, on_failure) {
+        return this.apiRequest('/system/postingHint', {
+            method: 'get',
+            parameters: {
+                'long':     gps_fix.longitude,
+                'lat':      gps_fix.latitude,
+                'accuracy': gps_fix.horizAccuracy,
+            },
+            onSuccess: on_success,
+            onFailure: on_failure
+        });
+    },
+
+    /**
      * Perform some post-response fixing on chalk records.
      */
     _fixupChalk: function (chalk) {
