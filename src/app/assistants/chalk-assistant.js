@@ -86,7 +86,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet],
                 ['chalk-email-button', Mojo.Event.tap, this.handleEmail]
             ];
-            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) === -1) {
+            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) !== -1) {
                 // Wire up the chalkback button if allowed.
                 listeners.push([
                     'chalk-chalkback-button', 
