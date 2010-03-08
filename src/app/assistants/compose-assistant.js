@@ -11,9 +11,12 @@ function ComposeAssistant(chalkback_item) {
 
 ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
 
-    var MAX_MESSAGE_LENGTH = 256;
+    var DEBUG = true;
 
     return {
+
+        // Scene pop debounce flag.
+        popping: false,
 
         /**
          * Set up the whole card.
@@ -22,69 +25,45 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
 
             BlockChalk.setupGlobalMenu(this.controller);
 
-            this.model = {
-                message: '',
-                submit_disabled: false
+            var ext_compose_params = {
+                'long':     BlockChalk.gps_fix.longitude,
+                'lat':      BlockChalk.gps_fix.latitude,
+                'accuracy': BlockChalk.gps_fix.horizAccuracy,
+                'userId':   BlockChalk.user_id
             };
 
-            if (!this.chalkback_item) {
-                // Remove the 'Post a new chalkback' title.
-                // TODO: Change this to a CSS-driven mode.
-                this.controller.get('chalkback').remove();
-            } else {
-                this.controller.get('contents').update(
-                    this.chalkback_item.contents.escapeHTML()
-                );
-                this.controller.get('meta').update([
-                    BlockChalk.formatDate(this.chalkback_item.datetime),
-                    ", ",
-                    this.chalkback_item.distance
-                ].join('').escapeHTML());
+            if (this.chalkback_item) {
+                ext_compose_params.replyId = this.chalkback_item.id;
             }
 
-            // Setup the posting text field.
+            var ext_compose_url = 'http://tpalm.blockchalk.com/post_webos?' +
+                $H(ext_compose_params).toQueryString();
+
+            Mojo.log("EXTERNAL FORM URL %s", ext_compose_url);
+
             this.controller.setupWidget(
-                'chalk-message',
+                'external-compose',
                 {
-                    'modelProperty': 'message',
-                    'hintText': '',
-                    'multiline':true,
-                    'enterSubmits':true,
-                    'autoFocus':true,
-                    'changeOnKeyPress': true,
-                    'autoReplace': true
+                    url: ext_compose_url,
+                    minFontSize: 19,
+                    interrogateClicks: true,
+                    virtualPageWidth: 320
                 },
-                this.model
+                { }
             );
 
-            // Dynamically update text field hint text from the posting hint
-            // API resource.
-            BlockChalk.service.getPostingHint(
-                BlockChalk.gps_fix,
-                function (data) {
-                    $$('#chalk-message .multiline-hint-text')[0]
-                        .update(data.hint.short);
-                }
-            );
-
-            this.controller.setupWidget(
-                'chalk-post', 
-                { 
-                    label: $L('post'),
-                    disabledProperty: 'submit_disabled'
-                }, 
-                this.model
-            );
-
-            if (!this.chalkback_item) {
-                this.controller.get('compose-scene').className = 'here';
-                this.controller.get('helptext-chalkback').hide();
-            } else {
-                this.controller.get('compose-scene').className = 'chalkback';
-                this.controller.get('helptext-chalkback').show();
+            if (DEBUG) {
+                // DEBUG: This refresh button is just for ease of iterating on
+                // the web form
+                this.command_menu_model = {items: [
+                    {items: [ 
+                        { command:'Refresh', label: $L('Refresh'), icon: 'refresh' }
+                    ]}
+                ]};
+                this.controller.setupWidget(
+                    Mojo.Menu.commandMenu, {}, this.command_menu_model
+                );
             }
-
-            this.updateRemainingChars();
 
         },
 
@@ -92,16 +71,15 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          * Hook up listeners on card activation.
          */
         activate: function (event) {
-
-            /*
             var chain = new Decafbad.Chain([
                 BlockChalk.acquireGPSFix
             ], this, function (e) { }).next();
-            */
+
+            this.popping = false;
 
             Decafbad.Utils.setupListeners([
-                ['chalk-message', Mojo.Event.propertyChange, this.handleChange],
-                ['chalk-post', Mojo.Event.tap, this.handleSubmit]
+                ['external-compose', Mojo.Event.webViewTitleUrlChanged,
+                    this.handleWebTitleUrlChanged ]
             ], this);
         },
 
@@ -119,71 +97,34 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
         },
 
         /**
-         * Update the remaining character counter, returning the count.
+         * Intercept a change in title/URL and try to catch the success of a
+         * chalk post to pop the scene.
+         *
+         * TODO: This should probably use addUrlRedirect() and
+         * webViewUrlRedirect, but that didn't seem to be working.
          */
-        updateRemainingChars: function () {
-            var remaining = MAX_MESSAGE_LENGTH - this.model.message.length;
-            var counter = this.controller.get('character-count');
-            
-            if (remaining < 0) {
-                counter.addClassName('over');
-            } else {
-                counter.removeClassName('over');
-            }
-
-            counter.update('<span>'+remaining+'</span> characters');
-            return remaining;
-        },
-
-        /**
-         * Handle changes to the message field, mainly to update counter.
-         */
-        handleChange: function (ev) {
-            var remaining = this.updateRemainingChars();
-
-            // If enter is pressed, pretend the post button was tapped.
-            if (ev && Mojo.Char.isEnterKey(ev.originalEvent.keyCode)) {
-                this.handleSubmit(ev);
+        handleWebTitleUrlChanged: function (ev) {
+            if (/post-success$/.test(ev.url) && !this.popping) {
+                // Debounce, since this URL change event happens up to 3 times in a row.
+                this.popping = true;
+                Decafbad.Utils.showSimpleBanner($L('Chalk sent'));
+                this.controller.stageController.popScene({ refresh: true });
             }
         },
 
         /**
-         * Handle a tap on the submit button to post the chalk.
+         * Menu command dispatcher.
          */
-        handleSubmit: function (ev) {
-            
-            // Prevent duplicate submissions
-            if (this.model.submit_disabled) { return; }
-            
-            // Refuse to submit messages over the limit
-            var remaining = this.updateRemainingChars();
-            if (remaining < 0) { return; }
+        handleCommand: function (event) {
+            if(event.type !== Mojo.Event.command) { return; }
+            var func = this['handleCommand'+event.command];
+            if (typeof func !== 'undefined') {
+                return func.apply(this, [event]);
+            }
+        },
 
-            // Flag this submission as in progress
-            this.model.submit_disabled = true;
-            this.controller.modelChanged(this.model);
-
-            BlockChalk.service.createNewChalk(
-                this.model.message, BlockChalk.gps_fix, BlockChalk.user_id,
-                (this.chalkback_item) ? this.chalkback_item.id : null,
-                function (new_chalk) {
-
-                    Decafbad.Utils.showSimpleBanner($L('New chalk created'));
-                    this.controller.stageController.popScene({ refresh: true });
-
-                }.bind(this),
-                function (resp) {
-
-                    Decafbad.Utils.showSimpleBanner(
-                        $L('Chalk creation failed. Try again?'));
-                    this.model.submit_disabled = false;
-                    this.controller.modelChanged(this.model);
-
-                    Mojo.Log.error("CHALK FAILED %j", resp);
-
-                }.bind(this)
-            );
-
+        handleCommandRefresh: function (event) {
+            this.controller.get('external-compose').mojo.reloadPage();
         },
 
         EOF: null

@@ -1,48 +1,5 @@
 <div class="compose-scene" id="compose-scene">
     
-    <div class="palm-page-header multi-line">
-        <div class="palm-page-header-wrapper">
-            <div class="title">&nbsp;</div>
-            <div class="subtitle here">Post a new chalk right here</div>
-            <div class="subtitle chalkback">Post a new chalkback</div>
-        </div>
-    </div>
-
-    <div id="chalkback" class="palm-list">
-        <div class="palm-row single">
-            <div class="palm-row-wrapper chalk">
-                <div id="contents">...</div>
-                <div id="meta">...</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="palm-group">
-        <div class="palm-group-title" x-mojo-loc='' id="character-count">
-            <span>256</span> characters
-        </div>
-        <div class="palm-list">
-            <div class="palm-row single" id="post-row">
-                <div class="palm-row-wrapper">
-                    <div class="textfield-group" x-mojo-focus-highlight="true">
-                        <div class="title">
-                            <div id="chalk-message" x-mojo-element="TextField"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="chalk-post" x-mojo-element="Button" class="primary"></div>
-
-    <p id="helptext-chalkback" class="helptext">
-        A "chalkback" is a public response to someone else's chalk.
-    </p>
-    <p id="helptext-compose" class="helptext">
-        Want to attach a map link? You can indicate your exact location
-        or another street address by adding it in brackets at the end,
-        eg. <em>[here]</em> or <em>[haight and ashbury san francisco ca]</em>
-    </p>
+    <div id="external-compose" x-mojo-element="WebView"></div>
     
 </div>

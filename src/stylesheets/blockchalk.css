@@ -189,6 +189,7 @@ p.helptext {
 #compose-scene .subtitle { display: none; }
 #compose-scene.here .subtitle.here { display: block; }
 #compose-scene.chalkback .subtitle.chalkback { display: block; }
+#compose-scene #external-compose { background: #000; }
 
 .replies-scene #replies-mode {
 }
