@@ -13,7 +13,6 @@ StageAssistant.prototype = (function () { /** @lends StageAssistant# */
     return {
 
         setup: function() {
-            this.controller.setWindowOrientation('free');
             this.controller.pushScene('home');
 
             // Use a cookie to try to track the first run after installation.
