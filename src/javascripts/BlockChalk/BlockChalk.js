@@ -10,6 +10,10 @@ var BlockChalk = (function () {
     /** @lends Memento */
     return {
 
+        wakeup_interval: '00:05:00',
+        wakeup_device: false,
+        wakeup_task_id: null,
+
         // Current logged in user ID
         user_id: null,
         // Current GPS fix
