@@ -23,6 +23,9 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          */
         setup: function () {
 
+            Decafbad.Utils.setupLoadingSpinner(this);
+            Decafbad.Utils.showLoadingSpinner(this);
+
             BlockChalk.setupGlobalMenu(this.controller);
 
             var ext_compose_params = {
@@ -80,6 +83,10 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             this.controller.get('external-compose').mojo.focus();
 
             Decafbad.Utils.setupListeners([
+                ['external-compose', Mojo.Event.webViewLoadStarted,
+                    this.handleWebLoadStarted ],
+                ['external-compose', Mojo.Event.webViewLoadStopped,
+                    this.handleWebLoadStopped ],
                 ['external-compose', Mojo.Event.webViewTitleUrlChanged,
                     this.handleWebTitleUrlChanged ]
             ], this);
@@ -99,6 +106,23 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
         },
 
         /**
+         * React to the start of a page load in webview by showing the spinner.
+         */
+        handleWebLoadStarted: function (ev) {
+            Decafbad.Utils.showLoadingSpinner(this);
+        },
+
+        /**
+         * React to the stop of a page load in webview by hiding the spinner.
+         * Also hides the black curtain, which should only appear at setup when
+         * the webview is all-white.
+         */
+        handleWebLoadStopped: function (ev) {
+            Decafbad.Utils.hideLoadingSpinner(this);
+            $('curtain').hide();
+        },
+
+        /**
          * Intercept a change in title/URL and try to catch the success of a
          * chalk post to pop the scene.
          *
@@ -107,8 +131,10 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
          */
         handleWebTitleUrlChanged: function (ev) {
             if (/post-success$/.test(ev.url) && !this.popping) {
-                // Debounce, since this URL change event happens up to 3 times in a row.
+                // Debounce, since this URL change event happens up to 3 times
+                // in a row.
                 this.popping = true;
+                $('curtain').show(); // Last-ditch effort to hide white page
                 Decafbad.Utils.showSimpleBanner($L('Chalk sent'));
                 this.controller.stageController.popScene({ refresh: true });
             }

@@ -190,6 +190,10 @@ p.helptext {
 #compose-scene.here .subtitle.here { display: block; }
 #compose-scene.chalkback .subtitle.chalkback { display: block; }
 #compose-scene #external-compose { background: #000; }
+#compose-scene #curtain {
+    background: #000; width: 100%; height: 100%;
+    position: absolute; top: 0px; left: 0px;
+}
 
 .replies-scene #replies-mode {
 }
