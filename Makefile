@@ -28,7 +28,8 @@ ifeq ($(TARGET),device)
 else
 	NOVACOM_ID=$(shell novacom -l | grep emulator | head -1 | cut -d' ' -f2)
 	DEVICE=tcp
-	UPDATE_TARGETS=kill-inspector restart remove launch launch-inspector tail-log
+	#UPDATE_TARGETS=kill-inspector restart remove launch launch-inspector tail-log
+	UPDATE_TARGETS=kill-inspector  launch launch-inspector tail-log
 	TESTS_TARGETS=launch-tests tail-log
 endif
 
@@ -54,14 +55,17 @@ tests: $(TESTS_TARGETS)
 update: $(UPDATE_TARGETS)
 
 tail-log:
-	echo '----------------------------------------'; echo; \
-	echo 'tail -f /var/log/messages | grep $(APPID)' | novacom -d $(NOVACOM_ID) open tty://
+	-palm-log -f -d $(DEVICE) $(APPID)
+
+#tail-log:
+#	echo '----------------------------------------'; echo; \
+#	echo 'tail -n100 -f /var/log/messages | grep $(APPID)' | novacom -d $(NOVACOM_ID) open tty://
 
 kill:
-	-palm-launch -d $(NOVACOM_ID) -c $(APPID)
+	-palm-launch -d $(DEVICE) -c $(APPID)
 
 remove: kill
-	-palm-install -d $(NOVACOM_ID) -r $(APPID)
+	-palm-install -d $(DEVICE) -r $(APPID)
 
 restart:
 	echo 'killall LunaSysMgr; exit' | novacom -d $(NOVACOM_ID) open tty://; 
@@ -71,13 +75,13 @@ reboot:
 	echo 'reboot; exit' | novacom -d $(NOVACOM_ID) open tty://
 
 install: package
-	palm-install -d $(NOVACOM_ID) $(IPK)
+	palm-install -d $(DEVICE) $(IPK)
 
 launch: install
-	palm-launch -d $(NOVACOM_ID) -i $(APPID)
+	palm-launch -d $(DEVICE) -i $(APPID)
 
 launch-tests: install
-	palm-launch -p "{ testsEnabled:true, runTestsAtLaunch:true }" -d $(NOVACOM_ID) $(APPID)
+	palm-launch -p "{ testsEnabled:true, runTestsAtLaunch:true }" -d $(DEVICE) $(APPID)
 
 kill-inspector:
 ifeq ($(OS),Darwin)
