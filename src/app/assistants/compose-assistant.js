@@ -77,6 +77,8 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
 
             this.popping = false;
 
+            this.controller.get('external-compose').mojo.focus();
+
             Decafbad.Utils.setupListeners([
                 ['external-compose', Mojo.Event.webViewTitleUrlChanged,
                     this.handleWebTitleUrlChanged ]
