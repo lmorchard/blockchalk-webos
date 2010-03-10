@@ -11,8 +11,6 @@ function ComposeAssistant(chalkback_item) {
 
 ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
 
-    var DEBUG = true;
-
     return {
 
         // Scene pop debounce flag.
@@ -39,10 +37,8 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 ext_compose_params.replyId = this.chalkback_item.id;
             }
 
-            var ext_compose_url = 'http://tpalm.blockchalk.com/post_webos?' +
+            var ext_compose_url = 'http://blockchalk.com/post_webos?' +
                 $H(ext_compose_params).toQueryString();
-
-            Mojo.log("EXTERNAL FORM URL %s", ext_compose_url);
 
             this.controller.setupWidget(
                 'external-compose',
@@ -55,19 +51,6 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 { }
             );
 
-            if (DEBUG) {
-                // DEBUG: This refresh button is just for ease of iterating on
-                // the web form
-                this.command_menu_model = {items: [
-                    {items: [ 
-                        { command:'Refresh', label: $L('Refresh'), icon: 'refresh' }
-                    ]}
-                ]};
-                this.controller.setupWidget(
-                    Mojo.Menu.commandMenu, {}, this.command_menu_model
-                );
-            }
-
         },
 
         /**
@@ -77,7 +60,7 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
             var chain = new Decafbad.Chain([
                 BlockChalk.acquireGPSFix
             ], this, function (e) { }).next();
-
+            
             this.popping = false;
 
             this.controller.get('external-compose').mojo.focus();
@@ -138,21 +121,6 @@ ComposeAssistant.prototype = (function () { /** @lends ComposeAssistant# */
                 Decafbad.Utils.showSimpleBanner($L('Chalk sent'));
                 this.controller.stageController.popScene({ refresh: true });
             }
-        },
-
-        /**
-         * Menu command dispatcher.
-         */
-        handleCommand: function (event) {
-            if(event.type !== Mojo.Event.command) { return; }
-            var func = this['handleCommand'+event.command];
-            if (typeof func !== 'undefined') {
-                return func.apply(this, [event]);
-            }
-        },
-
-        handleCommandRefresh: function (event) {
-            this.controller.get('external-compose').mojo.reloadPage();
         },
 
         EOF: null
