@@ -146,13 +146,49 @@ p.helptext {
 .home-scene #chalklist .palm-row {
     min-height: 0px;
     padding: 6px 0 10px 0;
+    position: relative;
+}
+.home-scene #chalklist .palm-row .palm-row-wrapper {
+    width: 100%;
+    margin: 0; padding: 0;
+}
+.home-scene #chalklist .palm-row .chalk-item {
+    margin: 0; padding: 0;
+}
+.home-scene #chalklist .palm-row .indicator-wrapper {
+    margin: 0; 
+    padding: 0 0 0 10px;
+    vertical-align: middle;
+    width: 32px;
+    text-align: right;
+}
+.home-scene #chalklist .palm-row .indicator-kind-one .indicator-many {
+    display: none;
+}
+.home-scene #chalklist .palm-row .indicator-kind-many .indicator-one {
+    display: none;
+}
+.home-scene #chalklist .palm-row .indicator-wrapper .indicator {
+    width: 21px; height: 21px;
+}
+.home-scene #chalklist .palm-row .indicator-kind-one .indicator-one {
+    font-weight: bold;
+    font-size: 21px;
+    padding-right: 8px;
+}
+.home-scene #chalklist .palm-row .indicator-kind-many .indicator-many {
+    font-size: 12px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    background: transparent url(../images/SpeechBubble.png) no-repeat 0 0;
 }
 .home-scene #chalklist .palm-row .title {
-    padding: 0 14px 0 14px;
-    font-size: 18px;
+    padding: 0 0px 0 12px;
+    font-size: 17px;
 }
 .home-scene #chalklist .palm-row .subtitle {
-    margin: 4px 14px 0 14px;
+    margin: 4px 12px 0 0px;
     font-style: italic;
     font-size: 14px;
 }

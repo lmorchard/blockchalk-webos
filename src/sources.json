@@ -1,5 +1,6 @@
 [
     {"source": "javascripts\/vendor\/simpledateformat.js"},
+    {"source": "javascripts\/vendor\/pretty.js"},
     {"source": "javascripts\/Decafbad\/Decafbad.js"},
     {"source": "javascripts\/Decafbad\/Utils.js"},
     {"source": "javascripts\/Decafbad\/Chain.js"},

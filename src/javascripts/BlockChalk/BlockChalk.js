@@ -71,10 +71,15 @@ var BlockChalk = (function () {
          */
         formatDate: function(dt, model) {
             if (typeof dt === 'undefined') { return ''; }
-            var out = new SimpleDateFormat('hh:mma').format(dt).toLowerCase();
-            if ( (new Date()).toDateString() !== dt.toDateString() ) {
-                out += new SimpleDateFormat("' on 'EEE', 'MMM dd").format(dt);
+
+            var out = '';
+            if ( (new Date()).toDateString() == dt.toDateString() ) {
+                out = prettyDate(dt);
+            } else {
+                out = ( new SimpleDateFormat("EEE MMM dd, yyyy, ").format(dt) ) +
+                    ( new SimpleDateFormat('hh:mm a').format(dt).toLowerCase() );
             }
+
             return out;
         },
 

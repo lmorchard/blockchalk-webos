@@ -236,6 +236,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
             this.chalklist_model.items = chalks.map(function (chalk) {
                 chalk.hasLocation = (chalk.place) ? 'has-location' : '';
                 chalk.hasChalkback = (chalk.chalkbackTo) ? 'has-chalkback' : '';
+                chalk.indicatorKind = (chalk.threadCount > 1) ? 
+                    'indicator-kind-many' : 'indicator-kind-one';
+                
                 chalk.time = chalk.datetime.toLocaleTimeString();
                 chalk.date = chalk.datetime.toLocaleDateString();
                 return chalk;
