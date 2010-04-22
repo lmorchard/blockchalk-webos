@@ -78,6 +78,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
      * @param {string}   gps_fix.longitude Location longitude
      * @param {string}   gps_fix.latitude  Location latitude
      * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
+     * @param {string}   user_id           User ID for chalk list.
      * @param {function} on_success        success callback, passed user id
      * @param {function} on_failure        failure callback
      */
@@ -86,6 +87,38 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             method: 'get',
             parameters: {
                 'user':     user_id,
+                'long':     gps_fix.longitude,
+                'lat':      gps_fix.latitude,
+                'accuracy': ('nearby' == this.location_context) ?
+                    gps_fix.horizAccuracy : null,
+                'context':  this.location_context
+            },
+            onSuccess: function (data, resp) {
+                if (!data || !data.length) {
+                    return on_failure();
+                }
+                on_success(data.map(this._fixupChalk, this), resp);
+            }.bind(this),
+            onFailure: on_failure
+        });
+    },
+
+    /**
+     * Look up recent chalks near a given location
+     *
+     * @param {object}   gps_fix           GPS location fix
+     * @param {string}   gps_fix.longitude Location longitude
+     * @param {string}   gps_fix.latitude  Location latitude
+     * @param {string}   gps_fix.horizAccuracy Horizontal accuracy
+     * @param {string}   thread_id         Thread ID for chalks
+     * @param {function} on_success        success callback
+     * @param {function} on_failure        failure callback
+     */
+    getThreadChalks: function (gps_fix, thread_id, on_success, on_failure) {
+        return this.apiRequest('/chalks', {
+            method: 'get',
+            parameters: {
+                'threadId': thread_id,
                 'long':     gps_fix.longitude,
                 'lat':      gps_fix.latitude,
                 'accuracy': ('nearby' == this.location_context) ?

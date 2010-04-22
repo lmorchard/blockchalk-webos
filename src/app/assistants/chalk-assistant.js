@@ -20,6 +20,17 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
 
             BlockChalk.setupGlobalMenu(this.controller);
 
+            $H({
+                'reply': $L('Reply privately'),
+                'bury':  $L('Report'),
+                'tweet': $L('Tweet'),
+                'email': $L('Email')
+            }).each(function (pair) {
+                this.controller.setupWidget(
+                    'chalk-'+pair.key+'-button', { label: pair.value }, {}
+                );
+            }.bind(this));
+
             this.controller.get('contents').update(
                 this.chalk.contents.escapeHTML()
             );
@@ -29,6 +40,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 this.chalk.distance
             ].join(' ').escapeHTML());
 
+            /*
             if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) === -1) {
                 // User browsing another location, disallow chalkbacks.
                 this.controller.get('chalkback-wrapper').remove();
@@ -39,8 +51,10 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                     'chalk-chalkback-button', { label: $L('Chalkback') }, {}
                 );
              }
+             */
 
             // Hide the location button, or set it up if a place is present.
+            /*
             if (!this.chalk.place) {
                 this.controller.get('chalk-view-location-button').remove();
             } else {
@@ -49,31 +63,77 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                     { label: $L('View attached location') }, {}
                 );
             }
+            */
 
-            // Hide the view chalkback button, unless there's a chalkbackTo
-            if (!this.chalk.chalkbackTo) {
-                this.controller.get('chalk-view-chalkback-button').remove();
-            } else {
-                $$('.chalk-scene')[0].addClassName('chalkback');
-                this.controller.setupWidget(
-                    'chalk-view-chalkback-button', 
-                    { label: $L('See original chalk') }, {}
-                );
-            }
-
+            this.threadlist_model = { items: [ ] };
+           
             this.controller.setupWidget(
-                'chalk-reply-button', { label: $L('Reply privately') }, {}
-            );
-            this.controller.setupWidget(
-                'chalk-bury-button', { label: $L('Report') }, {}
-            );
-            this.controller.setupWidget(
-                'chalk-tweet-button', { label: $L('Tweet') }, {}
-            );
-            this.controller.setupWidget(
-                'chalk-email-button', { label: $L('Email') }, {}
+                'threadlist',
+                {
+                    reorderable:   false,
+                    swipeToDelete: true,
+                    itemTemplate:  'chalk/threadlist-item',
+                    listTemplate:  'chalk/threadlist-container',
+                    emptyTemplate: 'chalk/threadlist-empty',
+                    formatters: {
+                        datetime: BlockChalk.formatDate
+                    }
+                },
+                this.threadlist_model
             );
 
+            BlockChalk.service.getThreadChalks(
+                BlockChalk.gps_fix, 
+                this.chalk.threadId,
+                this.updateThreadDisplay.bind(this),
+                function () {
+                    // TODO: Error handler.
+                }
+            );
+
+        },
+
+        /**
+         * Update the thread display from a list of chalks.
+         */
+        updateThreadDisplay: function (chalks) {
+
+            // Fixup items with a few status flags, process dates, then sort by
+            // timestamps in reverse chron order.
+            this.threadlist_model.items = chalks
+                .filter(function (chalk) {
+                    return chalk.id != this.chalk.threadId
+                }.bind(this))
+                .map(function (chalk) {
+                    chalk.isCurrent = (this.chalk.id == chalk.id) ?
+                        'is-current' : '';
+                    chalk.hasLocation = (chalk.place) ? 'has-location' : '';
+                    chalk.hasChalkback = (chalk.chalkbackTo) ? 'has-chalkback' : '';
+                    chalk.indicatorKind = (chalk.threadCount > 1) ? 
+                        'indicator-kind-many' : 'indicator-kind-one';
+                    
+                    chalk.time = chalk.datetime.toLocaleTimeString();
+                    chalk.date = chalk.datetime.toLocaleDateString();
+                    return chalk;
+                }, this);
+
+            var first_chalk = chalks.shift();
+
+            this.controller.get('contents').update(
+                first_chalk.contents.escapeHTML()
+            );
+
+            this.controller.get('meta').update([
+                BlockChalk.formatDate(first_chalk.datetime),
+                first_chalk.distance
+            ].join(' ').escapeHTML());
+
+            // Update the list itself in the UI.
+            var thread_list = this.controller.get('threadlist');
+            thread_list.mojo.noticeUpdatedItems(0, this.threadlist_model.items);
+            thread_list.mojo.setLength(this.threadlist_model.items.length);
+        
+            chain.next();
         },
 
         /**
