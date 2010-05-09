@@ -11,18 +11,28 @@
     <div class="palm-list">
         <div class="palm-row single">
             <div class="palm-row-wrapper chalk">
-                <div id="contents">...</div>
-                <div id="meta">...</div>
+                <div id="contents"></div>
+                <div id="meta"></div>
             </div>
         </div>
     </div>
 
-    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="button-row"><tr>
-        <td width="25%" id="reply-wrapper"><div id="chalk-reply-button" x-mojo-element="Button" class="primary"></div></td>
-        <td width="25%" id="bury-wrapper"><div id="chalk-bury-button" x-mojo-element="Button" class="primary"></div></td>
-        <td width="25%" id="email-wrapper"><div id="chalk-email-button" x-mojo-element="Button" class="primary"></div></td>
-        <td width="25%" id="tweet-wrapper"><div id="chalk-tweet-button" x-mojo-element="Button" class="primary"></div></td>
-    </tr></table>
+    <div class="capsule-buttonbar">
+        <div class="palm-menu-group">
+            <div id="chalk-reply-button" class="palm-menu-button label-long" x-mojo-tap-highlight="immediate"><!-- palm-depressed -->
+                <div class="label label-long">Reply<br />Privately</div>
+            </div>
+            <div id="chalk-bury-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+                <div class="label">Report</div>
+            </div>
+            <div id="chalk-email-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+                <div class="label">Email</div>
+            </div>
+            <div id="chalk-tweet-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+                <div class="label">Tweet</div>
+            </div>
+        </div>
+    </div>
 
     <div id="threadlist" x-mojo-element="List"></div>
 

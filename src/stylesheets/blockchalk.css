@@ -10,6 +10,33 @@ p.helptext {
     font-size: 0.75em;
 }
 
+.capsule-buttonbar .palm-menu-group {
+    position: relative;
+    height: 54px;
+}
+.capsule-buttonbar .palm-menu-button {
+    word-wrap: normal;
+    position: relative;
+    float: left;
+    max-width: none;
+}
+.capsule-buttonbar .palm-menu-button.label-long {
+    line-height: 15px;
+}
+.capsule-buttonbar .palm-menu-button .label {
+    margin: 0 -11px 0 -11px;
+    word-wrap: normal;
+}
+.capsule-buttonbar .palm-menu-button .label-long {
+    font-size: 15px;
+    margin-top: 9px;
+    text-align: center;
+}
+.capsule-buttonbar .palm-menu-button:first-child {
+}
+.capsule-buttonbar .palm-menu-button:last-child {
+}
+
 .palm-menu-icon.here {
     background-image: url(../images/menu-icon-here.png);
 }
@@ -214,26 +241,35 @@ p.helptext {
 .chalk-scene.chalkback .subtitle.chalkback {
     display: block;
 }
-.chalk-scene .button-row .palm-button {
-    font-size: 18px;
-    margin: 0 -1px 0 -1px;
+.chalk-scene #threadlist {
+    margin-top: 12px;
 }
-.chalk-scene .button-row #chalk-reply-button .palm-button {
-    margin-left: 6px;
+.chalk-scene #threadlist .palm-row .palm-row-wrapper {
+    padding: 0 12px 0 12px;
 }
-.chalk-scene .button-row #chalk-tweet-button .palm-button {
-    margin-right: 6px;
+.chalk-scene #threadlist .palm-row {
+    background: #333333;
+    border-bottom: 1px solid #595959;
+    margin-bottom: 0;
 }
-.chalk-scene .button-row #chalk-reply-button .palm-button {
+.chalk-scene #threadlist .palm-row.empty {
+    background: transparent;
+    border-bottom: none;
+}
+.chalk-scene #threadlist .palm-row.first, .chalk-scene #threadlist .palm-row.single {
+    border-top: 1px solid #595959;
+}
+.chalk-scene #threadlist .palm-row .chalk-item .title {
+    font-size: 16px;
+    padding: 4px 0px 0px 0px;
+}
+.chalk-scene #threadlist .palm-row .chalk-item .subtitle {
+    color: #666;
+    font-style: italic;
     font-size: 14px;
-    line-height: 18px;
-    padding: 6px 0 0 0;
+    padding: 0px 0px 4px 0px;
 }
-.chalk-scene .button-row #chalk-reply-button .palm-button .palm-button-wrapper {
-}
-.chalk-scene .button-row #chalk-reply-button .palm-button .palm-button-wrapper .truncating-text {
-    white-space: normal;
-}
+
 #compose-scene #character-count span {
     font-weight: normal;
     color: #4f4;

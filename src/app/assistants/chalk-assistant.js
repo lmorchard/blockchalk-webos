@@ -20,17 +20,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
 
             BlockChalk.setupGlobalMenu(this.controller);
 
-            $H({
-                'reply': $L('Reply privately'),
-                'bury':  $L('Report'),
-                'tweet': $L('Tweet'),
-                'email': $L('Email')
-            }).each(function (pair) {
-                this.controller.setupWidget(
-                    'chalk-'+pair.key+'-button', { label: pair.value }, {}
-                );
-            }.bind(this));
-
             this.controller.get('contents').update(
                 this.chalk.contents.escapeHTML()
             );
@@ -140,6 +129,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Hook up listeners on card activation.
          */
         activate: function (event) {
+
             var listeners = [
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
