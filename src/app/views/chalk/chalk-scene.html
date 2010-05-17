@@ -1,5 +1,5 @@
-<div class="chalk-scene">
-    
+<div id="chalk-scene" class="chalk-scene">
+
     <div class="palm-page-header multi-line">
         <div class="palm-page-header-wrapper">
             <div class="title">&nbsp;</div>
@@ -19,21 +19,45 @@
 
     <div class="capsule-buttonbar">
         <div class="palm-menu-group">
-            <div id="chalk-reply-button" class="palm-menu-button label-long" x-mojo-tap-highlight="immediate"><!-- palm-depressed -->
+            <div id="chalk-reply-button" class="palm-menu-button label-long" 
+                x-mojo-tap-highlight="immediate">
                 <div class="label label-long">Reply<br />Privately</div>
             </div>
-            <div id="chalk-bury-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+            <div id="chalk-bury-button" class="palm-menu-button" 
+                x-mojo-tap-highlight="immediate">
                 <div class="label">Report</div>
             </div>
-            <div id="chalk-email-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+            <div id="chalk-email-button" class="palm-menu-button" 
+                x-mojo-tap-highlight="immediate">
                 <div class="label">Email</div>
             </div>
-            <div id="chalk-tweet-button" class="palm-menu-button" x-mojo-tap-highlight="immediate">
+            <div id="chalk-tweet-button" class="palm-menu-button" 
+                x-mojo-tap-highlight="immediate">
                 <div class="label">Tweet</div>
             </div>
         </div>
     </div>
 
     <div id="threadlist" x-mojo-element="List"></div>
+
+    <div id="footer">
+        <div class="palm-list">
+            <div id="chalk-message-container" class="palm-row">
+                <div class="palm-row-wrapper textfield-group focused">
+                    <div class="title">
+                        <div id="chalk-post-wrapper" class="icon right empty">
+                            <div id="chalk-post" class="chalk-post" 
+                                x-mojo-tap-highlight="immediate">
+                            </div>
+                        </div>
+                        <div id="character-count"></div>
+                        <div id="chalk-message" x-mojo-element="TextField" 
+                            class="chalk-message">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

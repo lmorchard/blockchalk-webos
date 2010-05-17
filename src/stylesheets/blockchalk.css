@@ -232,6 +232,10 @@ p.helptext {
     display: inline;
     background: transparent url(../images/chalkback.png) no-repeat 0 0;
 }
+
+.chalk-scene {
+    padding-bottom: 50px;
+}
 .chalk-scene .subtitle.chalkback {
     display: none;
 }
@@ -248,9 +252,12 @@ p.helptext {
     padding: 0 12px 0 12px;
 }
 .chalk-scene #threadlist .palm-row {
-    background: #333333;
+    background: #222;
     border-bottom: 1px solid #595959;
     margin-bottom: 0;
+}
+.chalk-scene #threadlist .palm-row.is-current {
+    background: #3a3a3a;
 }
 .chalk-scene #threadlist .palm-row.empty {
     background: transparent;
@@ -269,6 +276,46 @@ p.helptext {
     font-size: 14px;
     padding: 0px 0px 4px 0px;
 }
+.chalk-scene #chalk-message-container {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 320px;
+    display: none;
+}
+#chalk-scene.can-chalkback #chalk-message-container {
+    display: block;
+}
+.chalk-scene #chalk-message-container #chalk-message {
+    margin-top: 5px;
+}
+.chalk-scene #chalk-message-container textarea {
+    height: 24px;
+}
+.chalk-scene #chalk-message-container #chalk-message-container.palm-row .icon.right {
+    height: 61px;
+}
+.chalk-scene #chalk-message-container .chalk-post {
+    background: url(../images/msg-send-airplane.png) top left no-repeat;
+    width: 48px;
+    padding: 0;
+    margin: 0px;
+    height: 48px;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+}
+.chalk-scene #chalk-message-container .chalk-post.selected {
+    background: url(../images/msg-send-airplane-press.png) top left no-repeat;
+}
+.chalk-scene #chalk-message-container .chalk-message {
+    overflow: hidden;
+    max-height: 220px;
+}
+.chalk-scene #chalk-message-container #character-count {
+    display: none;
+}
+
 
 #compose-scene #character-count span {
     font-weight: normal;

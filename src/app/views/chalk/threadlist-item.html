@@ -1,4 +1,4 @@
-<div class="palm-row">
+<div class="palm-row #{isCurrent}">
     <table class="palm-row-wrapper" id="blockchalk-#{id}">
         <tr style="vertical-align: middle">
             <td class="chalk-item">
@@ -6,18 +6,11 @@
                     <span class="contents">#{contents}</span>
                     <span class="location-link"></span>
                     <img class="location-icon" src="images/1x1.png" />
-                    <!--<img class="chalkback-icon" src="images/1x1.png" />-->
                 </div>
                 <div class="subtitle">
                     Posted #{datetimeFormatted}
                 </div>
             </td>
-            <!--
-            <td class="indicator-wrapper #{indicatorKind}">
-                <div class="indicator indicator-one">&gt;</div>
-                <div class="indicator indicator-many">#{threadCount}</div>
-            </td>
-            -->
         </tr>
     </table>
 </div>
