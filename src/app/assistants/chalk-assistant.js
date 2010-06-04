@@ -246,6 +246,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                         BlockChalk.service.buryChalk(
                             this.chalk.id, BlockChalk.user_id,
                             function (resp) {
+                                Decafbad.Utils.showSimpleBanner('Chalk reported.');
                                 this.controller.stageController
                                     .popScene({ refresh: true });
                             }.bind(this),
@@ -413,6 +414,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 ev.item.id, BlockChalk.user_id,
                 function (resp) {
                     Decafbad.Utils.hideLoadingSpinner(this);
+                    Decafbad.Utils.showSimpleBanner('Chalk reported.');
                     this.refresh();
                 }.bind(this),
                 function (resp) {
