@@ -387,7 +387,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          */
         handleChalkTap: function (ev) {
             this.controller.popupSubmenu({
-                placeNear: ev.target,
+                placeNear: ev.originalEvent.target,
                 items: [
                     { command: 'reply', label: 'Reply Privately' },
                     { command: 'bury',  label: 'Report' }
