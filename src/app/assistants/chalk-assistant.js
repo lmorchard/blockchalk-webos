@@ -85,8 +85,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             }
 
             Decafbad.Utils.setupLoadingSpinner(this);
-
-            this.refresh();
         },
 
         /**
@@ -197,6 +195,8 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             }
 
             Decafbad.Utils.setupListeners(listeners, this);
+
+            this.refresh();
         },
 
         /**

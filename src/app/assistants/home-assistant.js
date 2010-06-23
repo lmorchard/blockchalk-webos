@@ -180,6 +180,9 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                     BlockChalk.service.setLocationContext('browse');
                     this.useSearchLocation(ev.search_location, ev.search_text);
                 }
+            } else {
+                // Trigger a refresh on activation, by default.
+                this.handleCommandRefresh();
             }
 
             this.setViewMode();

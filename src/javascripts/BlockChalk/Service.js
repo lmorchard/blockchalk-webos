@@ -373,8 +373,6 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
     apiRequest: function (path, options) {
         var url = this.options.base_url + path;
 
-        Mojo.log("API URL: %s?%s", url, $H(options.parameters).toQueryString());
-        
         options.evalJSON = 'force';
         options.parameters = options.parameters || {};
         options.parameters.format = 'json';
@@ -383,10 +381,15 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             options.parameters.profanityFilter = 'true';
         }
 
+        // HACK: Force a unique URL with timestamp for cache busting.
+        options.parameters['__'] = ( new Date() ).getTime();
+
         var orig_on_success = options.onSuccess;
         options.onSuccess = function (resp) {
             orig_on_success(resp.responseJSON || null, resp);
         };
+
+        Mojo.log("API URL: %s?%s", url, $H(options.parameters).toQueryString());
 
         return new Ajax.Request(url, options);
     },
