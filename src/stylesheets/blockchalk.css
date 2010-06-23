@@ -10,6 +10,9 @@ p.helptext {
     font-size: 0.75em;
 }
 
+.capsule-buttonbar {
+    width: 100%;
+}
 .capsule-buttonbar .palm-menu-group {
     position: relative;
     height: 54px;
@@ -19,6 +22,8 @@ p.helptext {
     position: relative;
     float: left;
     max-width: none;
+    width: 106px;
+    text-align: center;
 }
 .capsule-buttonbar .palm-menu-button.label-long {
     line-height: 15px;
@@ -33,8 +38,10 @@ p.helptext {
     text-align: center;
 }
 .capsule-buttonbar .palm-menu-button:first-child {
+    padding-left: 15px;
 }
 .capsule-buttonbar .palm-menu-button:last-child {
+    padding-right: 15px;
 }
 
 .palm-menu-icon.here {

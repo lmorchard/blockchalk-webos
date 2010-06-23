@@ -179,7 +179,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             var listeners = [
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
-                ['chalk-tweet-button', Mojo.Event.tap, this.handleTweet],
                 ['chalk-email-button', Mojo.Event.tap, this.handleEmail],
                 ['threadlist', Mojo.Event.listTap, this.handleChalkTap],
                 ['threadlist', Mojo.Event.listDelete, this.handleBuryChalk]
@@ -268,25 +267,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 parameters: {
                     id: "com.palm.app.maps",
                     params: { "query": this.chalk.place }
-                }
-            });
-        },
-
-        /**
-         * Handle tap on the tweet button
-         */
-        handleTweet: function (ev) {
-            var url = "http://m.twitter.com/home?status=" +
-                encodeURIComponent(
-                    'Check out this chalk on my block ' +
-                    'http://blockchalk.com/'+this.chalk.id+'#chalk'
-                );
-            Mojo.log("Tweet this URL: %s", url);
-            this.controller.serviceRequest("palm://com.palm.applicationManager", {
-                method: "open",
-                parameters:  {
-                    id: 'com.palm.app.browser',
-                    params: { target: url }
                 }
             });
         },
