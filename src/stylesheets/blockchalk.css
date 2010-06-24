@@ -2,6 +2,16 @@
 body.palm-dark {
     background: #000;
 }
+/** HACK: Force palm-light themed text fields with absolute image paths */
+body.palm-dark .palm-scene .textfield-group.focused {
+    -webkit-border-image: url(file:///usr/palm/frameworks/mojo/submissions/338/images/group-textfield-shadow-52.png) 15 15 15 15 stretch stretch;
+}
+body.palm-dark .palm-scene .palm-group .palm-row.single .textfield-group.focused {
+    -webkit-border-image: url(file:///usr/palm/frameworks/mojo/submissions/338/images/group-textfield-shadow-52-single.png) 15 15 15 15 stretch stretch;
+}
+body.palm-dark .palm-scene .textfield-group.focused .text-edit {
+    color: #000;
+}
 p {
     padding: 0 15px 0 15px;
     margin: 0 0 0.25em 0;
@@ -236,8 +246,7 @@ p.helptext {
     background: transparent url(../images/compass.png) no-repeat 0 0;
 }
 .has-chalkback .chalkback-icon {
-    display: inline;
-    background: transparent url(../images/chalkback.png) no-repeat 0 0;
+    display: none;
 }
 
 .chalk-scene {
