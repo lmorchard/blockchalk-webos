@@ -4,10 +4,10 @@ body.palm-dark {
 }
 /** HACK: Force palm-light themed text fields with absolute image paths */
 body.palm-dark .palm-scene .textfield-group.focused {
-    -webkit-border-image: url(file:///usr/palm/frameworks/mojo/submissions/338/images/group-textfield-shadow-52.png) 15 15 15 15 stretch stretch;
+    -webkit-border-image: url(../images/group-textfield-shadow-52.png) 15 15 15 15 stretch stretch;
 }
 body.palm-dark .palm-scene .palm-group .palm-row.single .textfield-group.focused {
-    -webkit-border-image: url(file:///usr/palm/frameworks/mojo/submissions/338/images/group-textfield-shadow-52-single.png) 15 15 15 15 stretch stretch;
+    -webkit-border-image: url(../images/group-textfield-shadow-52-single.png) 15 15 15 15 stretch stretch;
 }
 body.palm-dark .palm-scene .textfield-group.focused .text-edit {
     color: #000;
