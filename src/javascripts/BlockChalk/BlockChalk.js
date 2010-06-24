@@ -234,6 +234,7 @@ var BlockChalk = (function () {
                 // Ensure the cookie contents are valid, ignore if not. Covers an
                 // error case where the server API returned HTML for the user ID
                 // on login.
+                BlockChalk.service.setUserID(user_id);
                 BlockChalk.user_id = user_id;
                 Mojo.log("USER ID (cached) = %s", user_id);
                 chain.next();
@@ -251,6 +252,7 @@ var BlockChalk = (function () {
                 BlockChalk.service.getNewUserID(
                     function (user_id, resp) {
                         Mojo.log("USER ID (fresh) = %s", user_id);
+                        BlockChalk.service.setUserID(user_id);
                         cookie.put(BlockChalk.user_id = user_id);
                         clearTimeout(error_timeout);
                         if (!(user_id && /^[0-9A-Za-z]+$/.test(user_id))) {

@@ -381,6 +381,10 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
             options.parameters.profanityFilter = 'true';
         }
 
+        if (this.user_id && !options.parameters.user) {
+            options.parameters.user = this.user_id;
+        }
+
         // HACK: Force a unique URL with timestamp for cache busting.
         options.parameters['__'] = ( new Date() ).getTime();
 
