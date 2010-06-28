@@ -54,7 +54,6 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 'threadlist',
                 {
                     reorderable:   false,
-                    swipeToDelete: true,
                     itemTemplate:  'chalk/threadlist-item',
                     listTemplate:  'chalk/threadlist-container',
                     emptyTemplate: 'chalk/threadlist-empty',
@@ -178,8 +177,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
                 ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
                 ['chalk-email-button', Mojo.Event.tap, this.handleEmail],
-                ['threadlist', Mojo.Event.listTap, this.handleChalkTap],
-                ['threadlist', Mojo.Event.listDelete, this.handleBuryChalk]
+                ['threadlist', Mojo.Event.listTap, this.handleChalkTap]
             ];
             if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) !== -1) {
                 // Wire up the chalkback button if allowed.

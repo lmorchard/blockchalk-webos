@@ -34,7 +34,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
                 'chalklist',
                 {
                     reorderable:   false,
-                    swipeToDelete: true,
                     itemTemplate:  'home/chalklist-item',
                     listTemplate:  'home/chalklist-container',
                     emptyTemplate: 'home/chalklist-empty',
@@ -158,7 +157,6 @@ HomeAssistant.prototype = (function () { /** @lends HomeAssistant# */
 
             Decafbad.Utils.setupListeners([
                 ['chalklist', Mojo.Event.listTap, this.handleChalkTap],
-                ['chalklist', Mojo.Event.listDelete, this.handleBuryChalk],
                 ['sethome-button', Mojo.Event.tap, this.handleCommandMenuMakeHome]
             ], this);
 
