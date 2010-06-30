@@ -7,6 +7,7 @@
 /*global Decafbad, BlockChalk, Mojo, Ajax, $, $L, $A, $H, SimpleDateFormat */
 function ChalkAssistant(chalk) {
     this.chalk = chalk;
+    this.root_chalk = chalk;
 }
 
 ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
@@ -84,6 +85,41 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
             }
 
             Decafbad.Utils.setupLoadingSpinner(this);
+        },
+
+        /**
+         * Hook up listeners on card activation.
+         */
+        activate: function (event) {
+            var listeners = [
+                ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
+                ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
+                ['chalk-email-button', Mojo.Event.tap, this.handleEmail],
+                ['threadlist', Mojo.Event.listTap, this.handleChalkTap]
+            ];
+            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) !== -1) {
+                // Wire up the chalkback button if allowed.
+                listeners.push(['chalk-post', 
+                    Mojo.Event.tap, this.handlePostSubmit]);
+                listeners.push(['chalk-message',
+                    Mojo.Event.propertyChange, this.handlePostChange]);
+            }
+            if (this.root_chalk.place) {
+                // Wire up the location button if necessary.
+                listeners.push(['chalk-view-location-button', 
+                    Mojo.Event.tap, this.handleViewLocation]);
+            }
+
+            Decafbad.Utils.setupListeners(listeners, this);
+
+            this.refresh();
+        },
+
+        /**
+         * Unhook listeners on card deactivation.
+         */
+        deactivate: function (event) {
+            Decafbad.Utils.clearListeners(this);
         },
 
         /**
@@ -166,42 +202,9 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 }
             }
         
+            this.root_chalk = first_chalk;
+
             chain.next();
-        },
-
-        /**
-         * Hook up listeners on card activation.
-         */
-        activate: function (event) {
-            var listeners = [
-                ['chalk-reply-button', Mojo.Event.tap, this.handleReply],
-                ['chalk-bury-button', Mojo.Event.tap, this.handleBury],
-                ['chalk-email-button', Mojo.Event.tap, this.handleEmail],
-                ['threadlist', Mojo.Event.listTap, this.handleChalkTap]
-            ];
-            if (['nearby','home'].indexOf(BlockChalk.service.getLocationContext()) !== -1) {
-                // Wire up the chalkback button if allowed.
-                listeners.push(['chalk-post', 
-                    Mojo.Event.tap, this.handlePostSubmit]);
-                listeners.push(['chalk-message',
-                    Mojo.Event.propertyChange, this.handlePostChange]);
-            }
-            if (this.chalk.place) {
-                // Wire up the location button if necessary.
-                listeners.push(['chalk-view-location-button', 
-                    Mojo.Event.tap, this.handleViewLocation]);
-            }
-
-            Decafbad.Utils.setupListeners(listeners, this);
-
-            this.refresh();
-        },
-
-        /**
-         * Unhook listeners on card deactivation.
-         */
-        deactivate: function (event) {
-            Decafbad.Utils.clearListeners(this);
         },
 
         /**
@@ -214,8 +217,8 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          * Handle tap on the reply button.
          */
         handleReply: function (ev) {
-            this.chalk.kind = 'chalk';
-            this.controller.stageController.pushScene('reply', this.chalk);
+            this.root_chalk.kind = 'chalk';
+            this.controller.stageController.pushScene('reply', this.root_chalk);
         },
 
         /**
@@ -223,7 +226,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
          */
         handleChalkback: function (ev) {
             return this.controller.stageController.pushScene(
-                'compose', this.chalk
+                'compose', this.root_chalk
             );
         },
 
@@ -241,7 +244,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 onChoose: function(value) {
                     if ('yes' == value) {
                         BlockChalk.service.buryChalk(
-                            this.chalk.id, BlockChalk.user_id,
+                            this.root_chalk.id, BlockChalk.user_id,
                             function (resp) {
                                 Decafbad.Utils.showSimpleBanner('Chalk reported.');
                                 this.controller.stageController
@@ -264,7 +267,7 @@ ChalkAssistant.prototype = (function () { /** @lends ChalkAssistant# */
                 method: 'launch',
                 parameters: {
                     id: "com.palm.app.maps",
-                    params: { "query": this.chalk.place }
+                    params: { "query": this.root_chalk.place }
                 }
             });
         },

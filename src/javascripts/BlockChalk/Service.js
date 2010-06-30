@@ -386,7 +386,7 @@ BlockChalk.Service = Class.create(/** @lends BlockChalk.Service */{
         }
 
         // HACK: Force a unique URL with timestamp for cache busting.
-        options.parameters['__'] = ( new Date() ).getTime();
+        options.parameters.__ = ( new Date() ).getTime();
 
         var orig_on_success = options.onSuccess;
         options.onSuccess = function (resp) {
